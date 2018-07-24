@@ -40,7 +40,8 @@ var geojsontext = {
         "type": "Feature",
         "properties": {
           "title": "Grouse",
-          "description": "where i always hit my head"
+          "description": "where i always hit my head",
+          "forecast": "/api/snow-forecast.com/resorts/Grouse-Mountain/6day/top"
         },
         "geometry": {
           "coordinates": [
@@ -80,28 +81,93 @@ class Map extends Component {
 
   }
 
+  y() {
+    console.log('y');
+}
 
 
-
-
-  static addMarkers(thisMap){
-    // add markers to map
-    geojsontext.features.forEach(function(marker) {
-
+  static makeMarker(JSONText, thisMap, marker, httpRequest){
+    console.log(httpRequest);
+    console.log(httpRequest.readyState);
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+      console.log('in');
+      if (httpRequest.status === 200) {
+      console.log("makeing a marker");
+      var response = JSON.parse(JSONText);
       // create a HTML element for each feature
       var el = document.createElement('div');
       el.className = 'marker';
-
+  
       // make a marker for each feature and add to the map
-       new mapboxgl.Marker(el)
+       var mark = new mapboxgl.Marker(el)
       .setLngLat(marker.geometry.coordinates)
-      .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+      .setPopup(new mapboxgl.Popup({ offset: 25 })
+      
+      // add popups
     //  .setHTML(Map.generateInfoBox(marker)))
-    .setHTML('<p>' + Map.getSf() + '</p>'))
+    .setHTML('<p>' + JSONText+ '</p>'))
       .addTo(thisMap);
-    });
+    }
+    else {
+      alert('There was a problem with the request.');
+    }
+  }
+  };
+
+  static makeMarkerFetch(JSONText, thisMap, marker){
+    console.log(JSONText);
+     // var response = JSON.parse(JSONText);
+      // create a HTML element for each feature
+      var el = document.createElement('div');
+      el.className = 'marker';
+  
+      // make a marker for each feature and add to the map
+       var mark = new mapboxgl.Marker(el)
+      .setLngLat(marker.geometry.coordinates)
+      .setPopup(new mapboxgl.Popup({ offset: 25 })
+      
+      // add popups
+    //  .setHTML(Map.generateInfoBox(marker)))
+    .setHTML('<p>' + JSONText + '</p>'))
+      .addTo(thisMap);
+  };
+
+
+  addMarkers(thisMap){
+    // add markers to map
+    var httpRequest;
+    geojsontext.features.forEach(function(marker) {
+      
+      httpRequest = new XMLHttpRequest();
+      if (!httpRequest) {
+        alert('Giving up :( Cannot create an XMLHTTP instance');
+        return false;
+      }
+      console.log("makeing a request");
+     
+
+      fetch(marker.properties.forecast)
+      .then(function(response) {
+        return response.json();
+      }).then(function(myJSON){
+        Map.makeMarkerFetch(myJSON, thisMap, marker);
+        console.log(myJSON)
+      }).catch(error => console.error(`Fetch Error =\n`, error));
+    
+      });
+      console.log('after')
+      
+     /*  console.log(marker.properties.forecast);
+      httpRequest.open('GET', marker.properties.forecast , true);
+      httpRequest.send();
+      httpRequest.onreadystatechange = null
+      console.log("sent"); */
+
+      
+
 
   }
+
 
 
 
@@ -113,7 +179,7 @@ class Map extends Component {
       zoom: 9
     });
     var thisMap = this.map;
-    Map.addMarkers(thisMap);
+    this.addMarkers(thisMap);
   }
 
   componentWillUnmount() {
@@ -137,9 +203,9 @@ class App extends Component {
   render() {
     return (
       <Router history={browserHistory}>
-        <Route path="/" component={Home}/>
-        <Route path="/about" component={About}/>
-        <Route path="/settings" component={Settings}/>
+         <Route path="/" component={Home}/>
+        {/*<Route path="/about" component={About}/>
+        <Route path="/settings" component={Settings}/> */}
       </Router>
     );
 }
