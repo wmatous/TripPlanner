@@ -72,37 +72,14 @@ export default class Map extends Component {
   }
 
 
-  // static makeMarker(JSONText, thisMap, marker, httpRequest){
-  //   console.log(httpRequest);
-  //   console.log(httpRequest.readyState);
-  //   if (httpRequest.readyState === XMLHttpRequest.DONE) {
-  //     console.log('in');
-  //     if (httpRequest.status === 200) {
-  //     console.log("makeing a marker");
-  //     var response = JSON.parse(JSONText);
-  //     // create a HTML element for each feature
-  //     var el = document.createElement('div');
-  //     el.className = 'marker';
-  
-  //     // make a marker for each feature and add to the map
-  //      var mark = new mapboxgl.Marker(el)
-  //     .setLngLat(marker.geometry.coordinates)
-  //     .setPopup(new mapboxgl.Popup({ offset: 25 })
-      
-  //     // add popups
-  //   //  .setHTML(Map.generateInfoBox(marker)))
-  //   .setHTML('<p>' + JSONText+ '</p>'))
-  //     .addTo(thisMap);
-  //   }
-  //   else {
-  //     alert('There was a problem with the request.');
-  //   }
-  // }
-  // };
-
-  static makeMarkerFetch(JSONText, thisMap, marker){
-    console.log(JSONText);
-     // var response = JSON.parse(JSONText);
+  static makeMarker(JSONText, thisMap, marker, httpRequest){
+    console.log(httpRequest);
+    console.log(httpRequest.readyState);
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+      console.log('in');
+      if (httpRequest.status === 200) {
+      console.log("makeing a marker");
+      var response = JSON.parse(JSONText);
       // create a HTML element for each feature
       var el = document.createElement('div');
       el.className = 'marker';
@@ -114,15 +91,43 @@ export default class Map extends Component {
       
       // add popups
     //  .setHTML(Map.generateInfoBox(marker)))
+    .setHTML('<p>' + JSONText+ '</p>'))
+      .addTo(thisMap);
+    }
+    else {
+      alert('There was a problem with the request.');
+    }
+  }
+  };
+
+  static makeMarkerFetch(JSONText, thisMap, marker){
+    // ReactDOM.render(<POISidebar />, document.getElementById('poi-wrapper'))
+    // console.log(JSONText);
+    // ReactDOM.unmountComponentAtNode(document.getElementById('poi-wrapper'));
+    
+     // var response = JSON.parse(JSONText);
+      // create a HTML element for each feature
+      var el = document.createElement('div');
+      el.className = 'marker';
+      el.addEventListener('click', function(e){
+        console.log(e);
+        ReactDOM.render(<POISidebar />, document.getElementById('poi-wrapper'));
+      });
+  
+      // make a marker for each feature and add to the map
+       var mark = new mapboxgl.Marker(el)
+      .setLngLat(marker.geometry.coordinates)
+      .setPopup(new mapboxgl.Popup({ offset: 25 })
+      
+      // add popups
+    //  .setHTML(Map.generateInfoBox(marker)))
     .setHTML('<p>' + JSONText + '</p>'))
       .addTo(thisMap);
-      // .on('click', 
-      //   ReactDOM.render(<POISidebar 
-      //   title='sample trip' sports='hiking' distance='far' duration='long' forecast='dank' />, 
-      //   document.getElementById('poi-info')
-      //     )
-      // );
-  };
+  
+    
+    
+    
+  }
 
 
   addMarkers(thisMap){
@@ -184,7 +189,7 @@ export default class Map extends Component {
 }
 
 //document.getElementById('startmap').addEventListener("click", <Map />);
-// ReactDOM.render(<Map />, document.getElementById('map'));
+
 
 class POISidebar extends Component{
 
@@ -194,27 +199,32 @@ class POISidebar extends Component{
   // }
   render() {
     return (
-      <div class='poi-inner' >
-        <div class = 'trip-title'>
-            <p>{this.props.title}</p>
+      <div className='poi-overlay' id='poi-info' >
+        
+      
+      <div className = 'poi-inner' id = 'poi-info-inner'>
+          <div className = 'trip-title'>
+              <p>title of trip goes here</p>
+          </div>
+          <div className = 'trip-sports'>
+              <p>sports</p>
+          </div>
+          <div className = 'trip-distance'>
+              <p>N Km</p>
+          </div>
+          <div className = 'trip-location'>
+              <p>N days</p>
+          </div>
+          <div className = 'trip-forecast'>
+              <p>forecast of trip goes here</p>
+          </div>
         </div>
-        <div class = 'trip-sports'>
-            <p>{this.props.sports}</p>
         </div>
-        <div class = 'trip-distance'>
-            <p>{this.props.distance} Km</p>
-        </div>
-        <div class = 'trip-location'>
-            <p>{this.props.duration}</p>
-        </div>
-        <div class = 'trip-forecast'>
-            <p>{this.props.forecast}</p>
-        </div>
-      </div>)
-      ;
+      );
   }
 
 }
+//ReactDOM.render(<POISidebar />, document.getElementById('poi-wrapper'));
 
 // class App extends Component {
 //   render() {
