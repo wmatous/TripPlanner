@@ -9,29 +9,29 @@ import InfoBox from './Infobox';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
-const Page = ({ title }) => (
+// const Page = ({ title }) => (
 
-    <div className="App" id = 'appview'>
-      <div className="App-header">
-        <div className= "header-title">
-        <h2>{title}</h2>
-        </div>
-      </div>
-</div>
+//     <div className="App" id = 'appview'>
+//       <div className="App-header">
+//         <div className= "header-title">
+//         <h2>{title}</h2>
+//         </div>
+//       </div>
+// </div>
 
-);
+// );
 
-const Home = (props) => (
-  <Page title="Home"/>
-);
+// const Home = (props) => (
+//   <Page title="Home"/>
+// );
 
-const About = (props) => (
-  <Page title="About"/>
-);
+// const About = (props) => (
+//   <Page title="About"/>
+// );
 
-const Settings = (props) => (
-  <Page title="Settings"/>
-);
+// const Settings = (props) => (
+//   <Page title="Settings"/>
+// );
 
 var geojsontext = {
     "type": "FeatureCollection",
@@ -57,19 +57,9 @@ var geojsontext = {
   };
 
 
-class Map extends Component {
+export default class Map extends Component {
 
-  static getSf(){
-    var snow = require('snow-forecast-sfr');
-
-    var snowdata =  snow.parseResort('Tignes', 'mid', function(json){
-          //return json;
-    });
-
-
-    return snowdata;
-  }
-
+  
   static generateInfoBox(marker){
     var sum = 0;
     Map.getSf().forEach(function(snow) {
@@ -81,38 +71,34 @@ class Map extends Component {
 
   }
 
-  y() {
-    console.log('y');
-}
 
-
-  static makeMarker(JSONText, thisMap, marker, httpRequest){
-    console.log(httpRequest);
-    console.log(httpRequest.readyState);
-    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-      console.log('in');
-      if (httpRequest.status === 200) {
-      console.log("makeing a marker");
-      var response = JSON.parse(JSONText);
-      // create a HTML element for each feature
-      var el = document.createElement('div');
-      el.className = 'marker';
+  // static makeMarker(JSONText, thisMap, marker, httpRequest){
+  //   console.log(httpRequest);
+  //   console.log(httpRequest.readyState);
+  //   if (httpRequest.readyState === XMLHttpRequest.DONE) {
+  //     console.log('in');
+  //     if (httpRequest.status === 200) {
+  //     console.log("makeing a marker");
+  //     var response = JSON.parse(JSONText);
+  //     // create a HTML element for each feature
+  //     var el = document.createElement('div');
+  //     el.className = 'marker';
   
-      // make a marker for each feature and add to the map
-       var mark = new mapboxgl.Marker(el)
-      .setLngLat(marker.geometry.coordinates)
-      .setPopup(new mapboxgl.Popup({ offset: 25 })
+  //     // make a marker for each feature and add to the map
+  //      var mark = new mapboxgl.Marker(el)
+  //     .setLngLat(marker.geometry.coordinates)
+  //     .setPopup(new mapboxgl.Popup({ offset: 25 })
       
-      // add popups
-    //  .setHTML(Map.generateInfoBox(marker)))
-    .setHTML('<p>' + JSONText+ '</p>'))
-      .addTo(thisMap);
-    }
-    else {
-      alert('There was a problem with the request.');
-    }
-  }
-  };
+  //     // add popups
+  //   //  .setHTML(Map.generateInfoBox(marker)))
+  //   .setHTML('<p>' + JSONText+ '</p>'))
+  //     .addTo(thisMap);
+  //   }
+  //   else {
+  //     alert('There was a problem with the request.');
+  //   }
+  // }
+  // };
 
   static makeMarkerFetch(JSONText, thisMap, marker){
     console.log(JSONText);
@@ -130,6 +116,12 @@ class Map extends Component {
     //  .setHTML(Map.generateInfoBox(marker)))
     .setHTML('<p>' + JSONText + '</p>'))
       .addTo(thisMap);
+      // .on('click', 
+      //   ReactDOM.render(<POISidebar 
+      //   title='sample trip' sports='hiking' distance='far' duration='long' forecast='dank' />, 
+      //   document.getElementById('poi-info')
+      //     )
+      // );
   };
 
 
@@ -163,13 +155,7 @@ class Map extends Component {
       httpRequest.onreadystatechange = null
       console.log("sent"); */
 
-      
-
-
   }
-
-
-
 
   componentDidMount() {
     this.map = new mapboxgl.Map({
@@ -196,19 +182,50 @@ class Map extends Component {
     return <div style={style} ref={el => this.mapContainer = el} />;
   }
 }
-//document.getElementById('startmap').addEventListener("click", <Map />);
-ReactDOM.render(<Map />, document.getElementById('map'));
 
-class App extends Component {
+//document.getElementById('startmap').addEventListener("click", <Map />);
+// ReactDOM.render(<Map />, document.getElementById('map'));
+
+class POISidebar extends Component{
+
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {date: new Date()};
+  // }
   render() {
     return (
-      <Router history={browserHistory}>
-         <Route path="/" component={Home}/>
-        {/*<Route path="/about" component={About}/>
-        <Route path="/settings" component={Settings}/> */}
-      </Router>
-    );
-}
+      <div class='poi-inner' >
+        <div class = 'trip-title'>
+            <p>{this.props.title}</p>
+        </div>
+        <div class = 'trip-sports'>
+            <p>{this.props.sports}</p>
+        </div>
+        <div class = 'trip-distance'>
+            <p>{this.props.distance} Km</p>
+        </div>
+        <div class = 'trip-location'>
+            <p>{this.props.duration}</p>
+        </div>
+        <div class = 'trip-forecast'>
+            <p>{this.props.forecast}</p>
+        </div>
+      </div>)
+      ;
+  }
+
 }
 
-export default App;
+// class App extends Component {
+//   render() {
+//     return (
+//       <Router history={browserHistory}>
+//          <Route path="/" component={Home}/>
+//         {/*<Route path="/about" component={About}/>
+//         <Route path="/settings" component={Settings}/> */}
+//       </Router>
+//     );
+// }
+// }
+
+// export default App;
