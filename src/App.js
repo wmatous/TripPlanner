@@ -60,16 +60,16 @@ var geojsontext = {
 export default class Map extends Component {
 
   
-  static generateInfoBox(marker){
-    var sum = 0;
-    Map.getSf().forEach(function(snow) {
-      sum += snow;
-    });
+  // static generateInfoBox(marker){
+  //   var sum = 0;
+  //   Map.getSf().forEach(function(snow) {
+  //     sum += snow;
+  //   });
 
-  return ('<h3>' + marker.properties.title + '</h3><p>' + marker.properties.description + '</p>'
-          + '<p>6 day snow: '+ sum + '</p>');
+  // return ('<h3>' + marker.properties.title + '</h3><p>' + marker.properties.description + '</p>'
+  //         + '<p>6 day snow: '+ sum + '</p>');
 
-  }
+  // }
 
 
   static makeMarker(JSONText, thisMap, marker, httpRequest){
@@ -109,9 +109,10 @@ export default class Map extends Component {
       // create a HTML element for each feature
       var el = document.createElement('div');
       el.className = 'marker';
+      console.log('marker el');
       el.addEventListener('click', function(e){
-        console.log(e);
-        ReactDOM.render(<POISidebar />, document.getElementById('poi-wrapper'));
+        console.log(e.target);
+        ReactDOM.render(<POISidebar map = {thisMap} />, document.getElementById('poi-wrapper'));
       });
   
       // make a marker for each feature and add to the map
@@ -132,15 +133,15 @@ export default class Map extends Component {
 
   addMarkers(thisMap){
     // add markers to map
-    var httpRequest;
+    // var httpRequest;
     geojsontext.features.forEach(function(marker) {
       
-      httpRequest = new XMLHttpRequest();
-      if (!httpRequest) {
-        alert('Giving up :( Cannot create an XMLHTTP instance');
-        return false;
-      }
-      console.log("makeing a request");
+      // httpRequest = new XMLHttpRequest();
+      // if (!httpRequest) {
+      //   alert('Giving up :( Cannot create an XMLHTTP instance');
+      //   return false;
+      // }
+      // console.log("makeing a request");
      
 
       fetch(marker.properties.forecast)
@@ -170,7 +171,33 @@ export default class Map extends Component {
       zoom: 9
     });
     var thisMap = this.map;
+    console.log('map el');
+    thisMap.on('click', function(){
+      var targ;
+      if (!e) var e = window.event;
+      if (e.target) targ = e.target;
+      else if (e.srcElement) targ = e.srcElement;
+      if (targ.nodeType === 3) // defeat Safari bug
+        targ = targ.parentNode;
+
+      if (targ === thisMap.getCanvas()){
+      ReactDOM.unmountComponentAtNode(document.getElementById('poi-wrapper'));
+      }
+    });
+      // console.log(e);
+      // console.log(targ);
+      // console.log(thisMap);
+
+
+
+      // console.log('map');
+      // console.log(e);
+      // console.log(e.originalevent);
+  
+    
     this.addMarkers(thisMap);
+    
+    
   }
 
   componentWillUnmount() {
@@ -195,8 +222,11 @@ class POISidebar extends Component{
 
   // constructor(props) {
   //   super(props);
-  //   this.state = {date: new Date()};
+   
   // }
+
+  
+
   render() {
     return (
       <div className='poi-overlay' id='poi-info' >
