@@ -41,7 +41,7 @@ var geojsontext = {
         "properties": {
           "title": "Grouse Mountain",
           "description": "where i always hit my head",
-          "forecast": "/api/snow-forecast.com/resorts/Grouse-Mountain/6day/top",
+          "forecast_url": "/api/snow-forecast.com/resorts/Grouse-Mountain/6day/top",
           "attributes": [
             "skiing",
             "hitting head",
@@ -70,12 +70,12 @@ var geojsontext = {
   };
 
   var attributeicons = {
-    "skiing": "Sports-skiing-icon.png",
-    "hitting head" : "Sports-skiing-icon.png",
-    "skiing2": "Sports-skiing-icon.png",
-    "hitting 1head" : "Sports-skiing-icon.png",
-    "skiing3": "Sports-skiing-icon.png",
-    "hitting2 head" : "Sports-skiing-icon.png"
+    "skiing": "media/Sports-skiing-icon.png",
+    "hitting head" : "media/Sports-skiing-icon.png",
+    "skiing2": "media/Sports-skiing-icon.png",
+    "hitting 1head" : "media/Sports-skiing-icon.png",
+    "skiing3": "media/Sports-skiing-icon.png",
+    "hitting2 head" : "media/Sports-skiing-icon.png"
 
   }
 
@@ -292,15 +292,8 @@ class POISidebar extends Component{
   render() {
     console.log(this.state);
     
-    // if (this.state === undefined){
-    //   return (
-    //      
-    //              <div/>
-    //           <div/>
-    //       );
-    // }
+    // put snowforecast shit in cache somewhere so that scrape happens less
 
-    // else
     return (
       <div className='poi-overlay' id='poi-info' >
                   <div className = 'poi-inner' id = 'poi-info-inner'>
