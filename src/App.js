@@ -254,7 +254,7 @@ export default class Map extends Component {
       // console.log(e);
       // console.log(e.originalevent);
     
-    fetch('trips/?format=json')
+    fetch('https://pbeta.herokuapp.com/trips/?format=json')
     .then((response) => {
       console.log(response);
       return response.json();
