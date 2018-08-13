@@ -21,7 +21,7 @@
   },
   "proxy": {
     "/trips": {
-      "target": "http://localhost:8000",
+      "target": "https://pbeta.herokuapp.com/",
       "ws": true
     }
   }
