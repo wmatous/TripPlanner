@@ -20,10 +20,9 @@
     "concurrently": "^3.6.0"
   },
   "proxy": {
-    "/api": {
-      "target": "http://localhost:8080/",
+    "/trips": {
+      "target": "http://localhost:8000",
       "ws": true
-      
     }
   }
 }
