@@ -1,0 +1,3 @@
+# /_redirects
+
+/trips/*  https://pbeta.herokuapp.com/trips/:splat
