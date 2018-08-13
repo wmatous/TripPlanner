@@ -253,7 +253,7 @@ export default class Map extends Component {
       // console.log('map');
       // console.log(e);
       // console.log(e.originalevent);
-  
+    
     fetch('trips/?format=json')
     .then((response) => {
       console.log(response);
