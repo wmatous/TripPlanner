@@ -22,7 +22,8 @@
   "proxy": {
     "/trips": {
       "target": "https://pbeta.herokuapp.com/",
-      "ws": true
+      "ws": true,
+      "changeOrigin": true
     }
   }
 }
