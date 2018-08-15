@@ -20,10 +20,9 @@
     "concurrently": "^3.6.0"
   },
   "proxy": {
-    "/trips": {
+    "/api": {
       "target": "https://pbeta.herokuapp.com/",
-      "ws": true,
-      "changeOrigin": true
+      "ws": true
     }
   }
 }

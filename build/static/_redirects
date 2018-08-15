@@ -1,0 +1,4 @@
+# /_redirects
+/api/*  https://pbeta.herokuapp.com/:splat 200
+/* /index.html 200
+
