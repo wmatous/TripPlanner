@@ -260,8 +260,8 @@ export default class Map extends Component {
       // console.log('map');
       // console.log(e);
       // console.log(e.originalevent);
-    console.log(Map.fixURL('https://pbeta.herokuapp.com/trips/?format=json'));
-    fetch(Map.fixURL('https://pbeta.herokuapp.com/trips/?format=json'))
+    // console.log(Map.fixURL('https://pbeta.herokuapp.com/trips/?format=json'));
+    fetch('https://pbeta.herokuapp.com/trips/?format=json')
     .then((response) => {
       console.log(response);
       return response.json();
@@ -319,7 +319,7 @@ class POISidebar extends Component{
     super(props);
     this.state = {json: null};
     
-    fetch(Map.fixURL(this.props.info))
+    fetch(this.props.info)
     .then((response) => {
       // console.log(response);
       return response.json();

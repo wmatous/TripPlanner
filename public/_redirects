@@ -1,4 +1,5 @@
 # /_redirects
 https://pbeta.herokuapp.com/*  https://pbeta.herokuapp.com/:splat 301
+
 /* /index.html 200
 
