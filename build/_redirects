@@ -1,3 +1,0 @@
-# /_redirects
-/api/*  https://pbeta.herokuapp.com/:splat 
-
