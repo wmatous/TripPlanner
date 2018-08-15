@@ -1,5 +1,5 @@
 [[redirects]]
-  from = "/api"
-  to = "https://pbeta.herokuapp.com/"
-  status = 301
+  from = "/api/*"
+  to = "https://pbeta.herokuapp.com/:splat"
+  status = 200
   force = true
