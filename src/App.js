@@ -172,8 +172,8 @@ export default class Map extends Component {
   static fixURL(string){
     var s = string.indexOf("pbeta.herokuapp.com/");
     console.log(s);
-    if (s != -1){
-      return "/api/"+string.substring(s+"pbeta.herokuapp.com/".length)
+    if (s !== -1){
+      return string.substring(s+"pbeta.herokuapp.com/".length)
     }
   return string;
   }
@@ -262,7 +262,7 @@ export default class Map extends Component {
       // console.log(e);
       // console.log(e.originalevent);
     // console.log(Map.fixURL('https://pbeta.herokuapp.com/trips/?format=json'));
-    fetch(Map.fixURL('/api/trips/?format=json'))
+    fetch(Map.fixURL('/trips/?format=json'))
     .then((response) => {
       console.log(response);
       return response.json();
