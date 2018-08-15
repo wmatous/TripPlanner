@@ -169,6 +169,13 @@ export default class Map extends Component {
     
   // }
 
+  static fixURL(string){
+    var s = string.indexOf("pbeta.herokuapp.com/");
+    if (s){
+      return string.substring(s+"pbeta.herokuapp.com/".length);
+    }
+  return string;
+  }
 
   addMarkers(thisMap, JSONdata){
     // add markers to map
@@ -254,7 +261,7 @@ export default class Map extends Component {
       // console.log(e);
       // console.log(e.originalevent);
     
-    fetch('https://pbeta.herokuapp.com/trips/?format=json')
+    fetch(Map.fixURL('https://pbeta.herokuapp.com/trips/?format=json'))
     .then((response) => {
       console.log(response);
       return response.json();
@@ -312,7 +319,7 @@ class POISidebar extends Component{
     super(props);
     this.state = {json: null};
     
-    fetch(this.props.info)
+    fetch(Map.fixURL(this.props.info))
     .then((response) => {
       // console.log(response);
       return response.json();
