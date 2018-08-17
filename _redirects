@@ -1,0 +1,3 @@
+/api/*  https://pbeta.herokuapp.com/:splat
+
+/*      /index.html 200
