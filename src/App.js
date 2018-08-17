@@ -173,7 +173,7 @@ export default class Map extends Component {
     var s = string.indexOf("pbeta.herokuapp.com/");
     console.log(s);
     if (s !== -1){
-      return string.substring(s+"pbeta.herokuapp.com/".length)
+      return string.substring(s+"pbeta.herokuapp.com/".length);
     }
   return string;
   }
@@ -319,7 +319,7 @@ class POISidebar extends Component{
   constructor(props) {
     super(props);
     this.state = {json: null};
-    
+    console.log(Map.fixURL(this.props.info));
     fetch(Map.fixURL(this.props.info))
     .then((response) => {
       // console.log(response);
