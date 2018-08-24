@@ -41,11 +41,9 @@ body {
   bottom: 0;
   left: 0;
   top: 10vh;
-  background: rgba(255, 255, 255, 0.8);
-  margin-left: 3vh;
+  background: rgba(255, 255, 255);
   font-family: Arial, sans-serif;
   overflow: auto;
-  border-radius: 5px;
   visibility: hidden;
 }
 
@@ -70,17 +68,25 @@ body {
   top: 0;
   width: 100vw;
   height: 10vh;
-  background: rgb(255, 255, 255);
+  background: rgb(255, 255, 255, 0);
   visibility: visible;
+  text-align: center;
+  text-decoration-color: black;
+  font-family:  'Source Sans Pro', sans-serif;
+  font-size: 7vh;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#top_title{
+  all: inherit;
 }
 
 #poi-info {
   position: absolute;
   visibility: visible;
   top: 0;
-  height: 84vh;
-  margin-top: 13vh;
-  margin-bottom: 3vh;
+  height: 100vh;
   width: 30vw;
 }
 

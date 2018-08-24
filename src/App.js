@@ -6,6 +6,7 @@ import mapboxgl, { LngLat } from 'mapbox-gl';
 import './App.css';
 import InfoBox from './Infobox';
 
+var developing = true;
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
@@ -98,7 +99,7 @@ var geojsontext = {
 
 export default class Map extends Component {
 
-  
+ Sidebar;
   // static generateInfoBox(marker){
   //   var sum = 0;
   //   Map.getSf().forEach(function(snow) {
@@ -173,6 +174,10 @@ export default class Map extends Component {
     var s = string.indexOf("pbeta.herokuapp.com/");
     console.log(s);
     if (s !== -1){
+      if (developing===true){
+        console.log("developing urls");
+        return string.substring(1+s+"pbeta.herokuapp.com".length);
+      }
       return "api"+string.substring(s+"pbeta.herokuapp.com".length);
     }
   return string;
@@ -188,7 +193,10 @@ export default class Map extends Component {
       // console.log('marker el');
       el.addEventListener('click', function(e){
         // console.log(e.target);
+        console.log(document.getElementById('poi-wrapper'));
+        if 
         ReactDOM.render(<POISidebar map = {thisMap} info = {marker.url}/>, document.getElementById('poi-wrapper'));
+        
       });
   
       // make a marker for each feature and add to the map
@@ -261,8 +269,8 @@ export default class Map extends Component {
       // console.log('map');
       // console.log(e);
       // console.log(e.originalevent);
-    // console.log(Map.fixURL('https://pbeta.herokuapp.com/trips/?format=json'));
-    fetch('/api/trips/?format=json')
+    console.log(Map.fixURL('/trips/?format=json'));
+    fetch(Map.fixURL('/trips/?format=json'))
     .then((response) => {
       console.log(response);
       return response.json();
@@ -281,6 +289,9 @@ export default class Map extends Component {
   componentWillUnmount() {
     this.map.remove();
   }
+  componentWillMount(){
+    this.Sidebar = false;
+  }
 
   render() {
     const style ={
@@ -297,7 +308,7 @@ export default class Map extends Component {
 
 
 class POISidebar extends Component{
-
+map;
   // collectforecast(url){
   //   var JSON;
   //     // console.log(this.props.info.forecast);
@@ -319,6 +330,8 @@ class POISidebar extends Component{
   constructor(props) {
     super(props);
     this.state = {json: null};
+    this.map = props.map;
+    this.elementRef = React.createRef();
     console.log(Map.fixURL(this.props.info));
     fetch(Map.fixURL(this.props.info))
     .then((response) => {
@@ -332,8 +345,12 @@ class POISidebar extends Component{
     .catch(error => console.error(`Fetch Error =\n`, error));
    console.log(this.state);
   }
-  
-
+  componentDidMount(){
+    this.map.Sidebar = true;
+  }
+  componentWillUnmount() {
+    this.map.Sidebar = false;
+  }
   Icons(props) {
     var nodes = [];
     if(props.attributes){
@@ -345,6 +362,10 @@ class POISidebar extends Component{
     }
     return React.createElement('div', {id: "attribute-icons"}, nodes);
   }
+
+  static checkIfMounted() {
+    return this.elementRef.current != null;
+ }
 
   render() {
     console.log(this.state);
