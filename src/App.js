@@ -2,10 +2,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Router, browserHistory, Route } from 'react-router';
-import mapboxgl from 'mapbox-gl';
+import mapboxgl, { LngLat } from 'mapbox-gl';
 import './App.css';
 import InfoBox from './Infobox';
 
+var developing = true;
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
@@ -32,6 +33,22 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmb
 // const Settings = (props) => (
 //   <Page title="Settings"/>
 // );
+
+
+// [
+//   {"url":"http://localhost:8000/trips/97d1a8e2-aebe-4e8b-83a1-ea0e2c949f2e/?format=json",
+//   "id":"97d1a8e2-aebe-4e8b-83a1-ea0e2c949f2e",
+//   "latitude":"49.975046",
+//   "longitude":"-123.043000",
+//   "title":"Black Tusk",
+//   "duration":"10:30:00",
+//   "distance":"25.10",
+//   "description":"tusk",
+//   "forecasts":
+//     ["http://localhost:8000/forecasts/c31c768b-e86b-44bf-9c9c-41db030c071a/?format=json"],
+//   "attributes":[]}
+//   ,
+//   {"url":"http://localhost:8000/trips/e209e1f4-d58a-451a-a9b5-ddda4c0a8b72/?format=json","id":"e209e1f4-d58a-451a-a9b5-ddda4c0a8b72","latitude":"49.953346","longitude":"-123.017517","title":"Panorama Ridge","duration":"09:00:00","distance":"28.10","description":"lil extra hike","forecasts":["http://localhost:8000/forecasts/cf9736c1-a8b1-43ab-a030-bca6f862f00c/?format=json"],"attributes":[]}]
 
 var geojsontext = {
     "type": "FeatureCollection",
@@ -82,7 +99,7 @@ var geojsontext = {
 
 export default class Map extends Component {
 
-  
+ Sidebar;
   // static generateInfoBox(marker){
   //   var sum = 0;
   //   Map.getSf().forEach(function(snow) {
@@ -95,70 +112,105 @@ export default class Map extends Component {
   // }
 
 
-  static makeMarker(JSONText, thisMap, marker, httpRequest){
-    console.log(httpRequest);
-    console.log(httpRequest.readyState);
-    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-      // console.log('in');
-      if (httpRequest.status === 200) {
-      // console.log("makeing a marker");
-      var response = JSON.parse(JSONText);
-      // create a HTML element for each feature
-      var el = document.createElement('div');
-      el.className = 'marker';
+  // static makeMarker(JSONText, thisMap, marker, httpRequest){
+  //   console.log(httpRequest);
+  //   console.log(httpRequest.readyState);
+  //   if (httpRequest.readyState === XMLHttpRequest.DONE) {
+  //     // console.log('in');
+  //     if (httpRequest.status === 200) {
+  //     // console.log("makeing a marker");
+  //     var response = JSON.parse(JSONText);
+  //     // create a HTML element for each feature
+  //     var el = document.createElement('div');
+  //     el.className = 'marker';
   
-      // make a marker for each feature and add to the map
-       var mark = new mapboxgl.Marker(el)
-      .setLngLat(marker.geometry.coordinates)
-      .setPopup(new mapboxgl.Popup({ offset: 25 })
+  //     // make a marker for each feature and add to the map
+  //      var mark = new mapboxgl.Marker(el)
+  //     .setLngLat(marker.geometry.coordinates)
+  //     .setPopup(new mapboxgl.Popup({ offset: 25 })
       
-      // add popups
-    //  .setHTML(Map.generateInfoBox(marker)))
-    .setHTML('<p>' + JSONText+ '</p>'))
-      .addTo(thisMap);
-    }
-    else {
-      alert('There was a problem with the request.');
-    }
-  }
-  };
+  //     // add popups
+  //   //  .setHTML(Map.generateInfoBox(marker)))
+  //   .setHTML('<p>' + JSONText+ '</p>'))
+  //     .addTo(thisMap);
+  //   }
+  //   else {
+  //     alert('There was a problem with the request.');
+  //   }
+  // }
+  // };
 
-  static makeMarkerFetch( thisMap, marker){
-    // ReactDOM.render(<POISidebar />, document.getElementById('poi-wrapper'))
-    // console.log(JSONText);
-    // ReactDOM.unmountComponentAtNode(document.getElementById('poi-wrapper'));
+  // static makeMarkerFetch( thisMap, marker){
+  //   // ReactDOM.render(<POISidebar />, document.getElementById('poi-wrapper'))
+  //   // console.log(JSONText);
+  //   // ReactDOM.unmountComponentAtNode(document.getElementById('poi-wrapper'));
     
-     // var response = JSON.parse(JSONText);
-      // create a HTML element for each feature
+  //    // var response = JSON.parse(JSONText);
+  //     // create a HTML element for each feature
+  //     var el = document.createElement('div');
+  //     el.className = 'marker';
+  //     // console.log('marker el');
+  //     el.addEventListener('click', function(e){
+  //       // console.log(e.target);
+  //       ReactDOM.render(<POISidebar map = {thisMap} info = {marker.properties}/>, document.getElementById('poi-wrapper'));
+  //     });
+  
+  //     // make a marker for each feature and add to the map
+  //      var mark = new mapboxgl.Marker(el)
+  //     .setLngLat(LngLat(marker.))
+  //     .setPopup(new mapboxgl.Popup({ offset: 25 })
+      
+  //     // add popups
+  //   //  .setHTML(Map.generateInfoBox(marker)))
+  //   .setHTML('<p>' + marker.properties.title + '</p>'))
+  //     .addTo(thisMap);
+  
+    
+    
+    
+  // }
+
+  static fixURL(string){
+    var s = string.indexOf("pbeta.herokuapp.com/");
+    console.log(s);
+    if (s !== -1){
+      if (developing===true){
+        console.log("developing urls");
+        return string.substring(1+s+"pbeta.herokuapp.com".length);
+      }
+      return "api"+string.substring(s+"pbeta.herokuapp.com".length);
+    }
+  return string;
+  }
+
+  addMarkers(thisMap, JSONdata){
+    // add markers to map
+    // var httpRequest;
+    JSONdata.forEach(function(marker) {
+      console.log(marker);
       var el = document.createElement('div');
       el.className = 'marker';
       // console.log('marker el');
       el.addEventListener('click', function(e){
         // console.log(e.target);
-        ReactDOM.render(<POISidebar map = {thisMap} info = {marker.properties}/>, document.getElementById('poi-wrapper'));
+        console.log(document.getElementById('poi-wrapper'));
+        if 
+        ReactDOM.render(<POISidebar map = {thisMap} info = {marker.url}/>, document.getElementById('poi-wrapper'));
+        
       });
   
       // make a marker for each feature and add to the map
-       var mark = new mapboxgl.Marker(el)
-      .setLngLat(marker.geometry.coordinates)
+      var mark = new mapboxgl.Marker(el)
+      .setLngLat([marker.longitude, marker.latitude])
       .setPopup(new mapboxgl.Popup({ offset: 25 })
       
       // add popups
     //  .setHTML(Map.generateInfoBox(marker)))
-    .setHTML('<p>' + marker.properties.title + '</p>'))
+      .setHTML('<p>' + marker.title + '</p>'))
       .addTo(thisMap);
   
     
     
-    
-  }
-
-
-  addMarkers(thisMap){
-    // add markers to map
-    // var httpRequest;
-    geojsontext.features.forEach(function(marker) {
-      Map.makeMarkerFetch( thisMap, marker);
       
       // httpRequest = new XMLHttpRequest();
       // if (!httpRequest) {
@@ -217,15 +269,28 @@ export default class Map extends Component {
       // console.log('map');
       // console.log(e);
       // console.log(e.originalevent);
-  
+    console.log(Map.fixURL('/trips/?format=json'));
+    fetch(Map.fixURL('/trips/?format=json'))
+    .then((response) => {
+      console.log(response);
+      return response.json();
+    })
+    .then((myJSON) =>{
+      console.log(myJSON);
+      this.addMarkers(thisMap, myJSON);
+    })
+    .catch(error => console.error(`Fetch Error =\n`, error));
+  //  console.log(this.state);
     
-    this.addMarkers(thisMap);
     
     
   }
 
   componentWillUnmount() {
     this.map.remove();
+  }
+  componentWillMount(){
+    this.Sidebar = false;
   }
 
   render() {
@@ -243,7 +308,7 @@ export default class Map extends Component {
 
 
 class POISidebar extends Component{
-
+map;
   // collectforecast(url){
   //   var JSON;
   //     // console.log(this.props.info.forecast);
@@ -264,30 +329,43 @@ class POISidebar extends Component{
 
   constructor(props) {
     super(props);
-    this.state = {forecast: null};
-    fetch(this.props.info.forecast)
+    this.state = {json: null};
+    this.map = props.map;
+    this.elementRef = React.createRef();
+    console.log(Map.fixURL(this.props.info));
+    fetch(Map.fixURL(this.props.info))
     .then((response) => {
       // console.log(response);
       return response.json();
     })
     .then((myJSON) =>{
       
-      this.setState({forecast : myJSON});
+      this.setState({json : myJSON});
     })
     .catch(error => console.error(`Fetch Error =\n`, error));
    console.log(this.state);
   }
-  
-
+  componentDidMount(){
+    this.map.Sidebar = true;
+  }
+  componentWillUnmount() {
+    this.map.Sidebar = false;
+  }
   Icons(props) {
     var nodes = [];
+    if(props.attributes){
      props.attributes.forEach(function(attribute){
         nodes.push(React.createElement("img",
           {src : attributeicons[attribute], key: attribute, className : "activity-icon"}, null));
         
      });
+    }
     return React.createElement('div', {id: "attribute-icons"}, nodes);
   }
+
+  static checkIfMounted() {
+    return this.elementRef.current != null;
+ }
 
   render() {
     console.log(this.state);
@@ -299,20 +377,21 @@ class POISidebar extends Component{
                   <div className = 'poi-inner' id = 'poi-info-inner'>
       
           <div className = 'trip-title'>
-              <p id ='trip-title' >{this.props.info.title}</p>
+              <p id ='trip-title' >{this.state.json ? this.state.json.title : "Loading..."}</p>
           </div>
           <div className = 'trip-attributes'>
               
-            <this.Icons attributes = {this.props.info.attributes}/>
+            <this.Icons attributes = {this.state.json ? this.state.json.attributes : []}/>
           </div>
           <div className = 'trip-distance'>
-              <p id = 'trip-distance'>{this.props.info.distance} Km</p>
+              <p id = 'trip-distance'>{this.state.json ? this.state.json.distance : "Loading"} Km</p>
           </div>
-          <div className = 'trip-location'>
-              <p id = 'trip-location'>{this.props.info.duration} days</p>
+          <div className = 'trip-duration'>
+              <p id = 'trip-duration'>{this.state.json ? this.state.json.duration : "Loading"} days</p>
           </div>
           <div className = 'trip-forecast'>
-              <p id = 'trip-forecast'>{this.state.forecast ? JSON.stringify(this.state.forecast) : "Loading"}</p>
+              <p id = 'trip-forecast'> Loading</p>
+              
           </div>
         </div>
         </div>
@@ -320,6 +399,11 @@ class POISidebar extends Component{
   }
 
 }
+
+{/* <p id = 'trip-forecast'>{this.state.forecast ? JSON.stringify(this.state.json.forecast) : "Loading"}</p> */}
+
+
+
 //ReactDOM.render(<POISidebar />, document.getElementById('poi-wrapper'));
 
 // class App extends Component {

@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "ajv": "^6.5.3",
     "mapbox-gl": "^0.46.0-beta.1",
-    "react": "^16.4.1",
+    "mobx": "^5.0.3",
+    "mobx-react": "^5.2.5",
+    "react": "^16.4.2",
     "react-dom": "^16.4.1",
     "react-router": "^3.0.5",
     "react-scripts": "1.1.4",
@@ -20,10 +23,9 @@
     "concurrently": "^3.6.0"
   },
   "proxy": {
-    "/api": {
-      "target": "http://localhost:8080/",
+    "/trips/": {
+      "target": "http://localhost:8000/",
       "ws": true
-      
     }
   }
 }
