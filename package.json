@@ -20,10 +20,10 @@
     "concurrently": "^3.6.0"
   },
   "proxy": {
-    "/api": {
-      "target": "http://localhost:8080/",
-      "ws": true
-      
+    "/trips/": {
+      "target": "https://pbeta.herokuapp.com/",
+      "ws": true,
+      "changeOrigin": true
     }
   }
 }
