@@ -1,10 +1,10 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Router, browserHistory, Route } from 'react-router';
 import mapboxgl, { LngLat } from 'mapbox-gl';
 import './App.css';
-import InfoBox from './Infobox';
+import trips from './pbeta_trips.js';
+import tusk from './pbeta_blacktusk.js';
 
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
@@ -49,41 +49,41 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmb
 //   ,
 //   {"url":"http://localhost:8000/trips/e209e1f4-d58a-451a-a9b5-ddda4c0a8b72/?format=json","id":"e209e1f4-d58a-451a-a9b5-ddda4c0a8b72","latitude":"49.953346","longitude":"-123.017517","title":"Panorama Ridge","duration":"09:00:00","distance":"28.10","description":"lil extra hike","forecasts":["http://localhost:8000/forecasts/cf9736c1-a8b1-43ab-a030-bca6f862f00c/?format=json"],"attributes":[]}]
 
-var geojsontext = {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "properties": {
-          "title": "Grouse Mountain",
-          "description": "where i always hit my head",
-          "forecast_url": "/api/snow-forecast.com/resorts/Grouse-Mountain/6day/top",
-          "attributes": [
-            "skiing",
-            "hitting head",
-            "skiing2",
-            "hitting 1head",
-            "skiing3",
-            "hitting2 head"
-          ],
-          "distance": 1,
-          "duration": 1,
+// var geojsontext = {
+//     "type": "FeatureCollection",
+//     "features": [
+//       {
+//         "type": "Feature",
+//         "properties": {
+//           "title": "Grouse Mountain",
+//           "description": "where i always hit my head",
+//           "forecast_url": "/api/snow-forecast.com/resorts/Grouse-Mountain/6day/top",
+//           "attributes": [
+//             "skiing",
+//             "hitting head",
+//             "skiing2",
+//             "hitting 1head",
+//             "skiing3",
+//             "hitting2 head"
+//           ],
+//           "distance": 1,
+//           "duration": 1,
 
           
           
-        },
-        "geometry": {
-          "coordinates": [
-             -123.082754,
-             49.379609
-          ],
-          "type": "Point"
-        }
-      },
+//         },
+//         "geometry": {
+//           "coordinates": [
+//              -123.082754,
+//              49.379609
+//           ],
+//           "type": "Point"
+//         }
+//       },
 
-    ],
+//     ],
 
-  };
+//   };
 
   var attributeicons = {
     "skiing": "media/Sports-skiing-icon.png",
@@ -168,13 +168,20 @@ export default class Map extends Component {
     
     
   // }
-
+// uncomment lines for deployment
   static fixURL(string){
-    var s = string.indexOf("pbeta.herokuapp.com/");
+    
+    // var s = string.indexOf("pbeta.herokuapp.com/");
+    // console.log(s);
+    // if (s !== -1){
+    //   return "api"+string.substring(s+"pbeta.herokuapp.com".length);
+    // }
+    var s = string.indexOf("http://localhost:8000/");
     console.log(s);
     if (s !== -1){
-      return "api"+string.substring(s+"pbeta.herokuapp.com".length);
+      return string.substring(s+"http://localhost:8000/".length);
     }
+
   return string;
   }
 
@@ -262,7 +269,9 @@ export default class Map extends Component {
       // console.log(e);
       // console.log(e.originalevent);
     // console.log(Map.fixURL('https://pbeta.herokuapp.com/trips/?format=json'));
-    fetch('/api/trips/?format=json')
+
+    // '/api/trips/?format=json' for deployment
+    fetch('trips/')
     .then((response) => {
       console.log(response);
       return response.json();
@@ -349,7 +358,6 @@ class POISidebar extends Component{
   render() {
     console.log(this.state);
     
-    // put snowforecast shit in cache somewhere so that scrape happens less
 
     return (
       <div className='poi-overlay' id='poi-info' >
