@@ -6,5 +6,12 @@
       "node_modules/**/*.ts",
       "coverage/lcov-report/*.js"
     ]
-  }
+  },
+  "rules": {
+    "no-console": {
+      "options": "log",
+      "severity": "warning"
+    },
+    "interface-name": [false]
+}
 }
