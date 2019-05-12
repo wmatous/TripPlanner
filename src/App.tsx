@@ -2,9 +2,10 @@ import mapboxgl from 'mapbox-gl';
 import React, { Component } from 'react';
 
 
-import ReactDOM from 'react-dom';
+// import ReactDOM from 'react-dom';
+// import posed from 'react-pose';
 
-import POISidebar from './POISidebar';
+// import {POISidebar} from './POISidebar';
 import {tripstore} from './TripStore';
 
 
@@ -105,7 +106,12 @@ import { Trip } from './TripStore';
     
 
   // }
-  mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
+  if(process.env.REACT_APP_MAPBOX_KEY){
+    mapboxgl.accessToken =  process.env.REACT_APP_MAPBOX_KEY;
+  } else {
+    // handle the issue;
+  }
+
    
 export default class Map extends Component {
   
@@ -124,6 +130,12 @@ export default class Map extends Component {
 
   return urlstring;
   }
+
+  // public static PosedSidebar = posed(POISidebar)
+  // ({
+  //   left: { x: -100 },
+  //   right: { x: 0 }
+  // });
   private map: any;
   private mapContainer: any;
 
@@ -199,6 +211,8 @@ export default class Map extends Component {
   // }
 // uncomment lines for deployment
  
+
+
 // using thisMap: Map causes issue with last line
   public addMarkers(thisMap:any, JSONdata:Trip[]){
     // add markers to map
@@ -211,7 +225,10 @@ export default class Map extends Component {
       el.addEventListener('click',  ()=> {
         if (marker.url){
           tripstore.setActiveTrip(marker.url);
-          ReactDOM.render(<POISidebar />, document.getElementById('poi-wrapper'));
+          tripstore.setSidebar(true);
+          
+          
+          ;
         }
       });
   
@@ -264,10 +281,11 @@ export default class Map extends Component {
           if (targ.nodeType === 3){ // defeat Safari bug
             targ = targ.parentNode;
           }
-        const element = document.getElementById('poi-wrapper')
-        if (targ === thisMap.getCanvas() && element !== null){
+        // const element = document.getElementById('poi-wrapper')
+        if (targ === thisMap.getCanvas()){
+          tripstore.setSidebar(false);
       
-        ReactDOM.unmountComponentAtNode(element);
+        // ReactDOM.unmountComponentAtNode(element);
         }
     }}});
       // console.log(e);

@@ -21,6 +21,13 @@ export interface Trip {
     public payload: Trip = {};
     @observable
     public currentTrip: URL;
+    @observable
+    public activeSidebar: boolean = false;
+
+    @action
+    public setSidebar(input: boolean){
+      this.activeSidebar = input;
+    }
   
   
     @action

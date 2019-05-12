@@ -10,7 +10,12 @@ import { tripstore } from './TripStore';
 // }
 
 @observer
-export default class POISidebar extends Component {
+export default class POISidebar extends Component
+// <{
+//     hostref: ReactRef
+// }> 
+{
+// (({hostRef}:{hostRef: any}) => {
 
   // collectforecast(url){
   //   var JSON;
@@ -59,18 +64,19 @@ export default class POISidebar extends Component {
 //     }
 //     return React.createElement('div', {id: "attribute-icons"}, nodes);
 //   }
-
-  public render() {
-      if (!tripstore.payload){
+   public render(){
+      if (!tripstore.activeSidebar){
           return (<div/>)
       }
-    // console.log(this.state);
+      
     
 
     return (
-      <div className='poi-overlay' id='poi-info' >
+      <div className='poi-overlay' id='poi-info' 
+    //   ref={hostRef} 
+      >
                   <div className = 'poi-inner' id = 'poi-info-inner'>
-      
+            <p>{tripstore.currentTrip}</p>
           <div className = 'trip-title'>
               <p id ='trip-title' >{tripstore.payload.active ? tripstore.payload.title : "Loading..."}</p>
           </div>
@@ -89,10 +95,14 @@ export default class POISidebar extends Component {
               
           </div>
         </div>
+        {/* <p id = 'trip-forecast'>{this.state.forecast ? JSON.stringify(this.state.json.forecast) : "Loading"}</p> */}
         </div>
+        
       );
-  }
-
+  };
 }
 
-{/* <p id = 'trip-forecast'>{this.state.forecast ? JSON.stringify(this.state.json.forecast) : "Loading"}</p> */}
+
+
+
+
