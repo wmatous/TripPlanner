@@ -32,41 +32,9 @@ body {
   width: 100%;
 }
 
-/**
-* Set rules for how the map overlays
-* (info box and legend) will be displayed
-* on the page. */
-.poi-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  top: 10vh;
-  background: rgba(255, 255, 255, 0.8);
-  margin-left: 3vh;
-  font-family: Arial, sans-serif;
-  overflow: auto;
-  border-radius: 5px;
-  visibility: hidden;
-}
 
-.map-overlay {
-  position: absolute;
-  top:10vh;
-  height: 90vh;
-  width: 100vw;
-  /* bottom: 0;
-  left: 0;
-  top: 10vh;
-  background: rgba(255, 255, 255, 0.8);
-  margin-left: 20px;
-  font-family: Arial, sans-serif;
-  overflow: auto;
-  border-radius: 5px;
-  visibility: hidden; */
-}
 
 .header-overlay {
-  position: absolute;
   top: 0;
   width: 100vw;
   height: 10vh;
@@ -74,21 +42,7 @@ body {
   visibility: visible;
 }
 
-#poi-info {
-  position: absolute;
-  visibility: visible;
-  top: 0;
-  height: 84vh;
-  margin-top: 13vh;
-  margin-bottom: 3vh;
-  width: 30vw;
-}
 
-.poi-inner {
-  position: absolute;
-  margin-left: 5%;
-  width: 30vw;
-}
 
 #legend {
   padding: 10px;
@@ -127,4 +81,8 @@ body {
 
 #trip-distance {
   clear: both;
+}
+
+#overlay-wrapper {
+  position: absolute;
 }

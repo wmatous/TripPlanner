@@ -1,102 +1,93 @@
 import {observer} from 'mobx-react';
-import React, { Component } from 'react';
 
-import './App.css'; 
+import React, { Component } from 'react';
+import posed from 'react-pose';
+import './POISidebar.css';
+
 import { tripstore } from './TripStore';
 
-// interface IPOIProps{
-//     // map: Map
-//     // info?: URL
-// }
+
+const Modal = posed.div({
+  enter: {
+    opacity: 1,
+    transition: { duration: 600 },
+    x: 0,
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 600 },
+    x: -100,
+  }
+});
+
 
 @observer
-export default class POISidebar extends Component
-// <{
-//     hostref: ReactRef
-// }> 
+export default class POISidebar extends Component<{}, {}>
 {
-// (({hostRef}:{hostRef: any}) => {
 
-  // collectforecast(url){
-  //   var JSON;
-  //     // console.log(this.props.info.forecast);
-  //     fetch(url)
-  //       .then(function(response) {
-  //         // console.log(response);
-  //         return response.json();
-  //       })
-  //       .then(function(myJSON){
-          
-  //         JSON = myJSON;
-  //         console.log(myJSON);
-  //       })
-  //       .catch(error => console.error(`Fetch Error =\n`, error));
-  
-  //       return JSON;
-  //     }
+  public editField(event: React.MouseEvent<HTMLElement>) {
+    console.log((event.target as Element).id);
+  }
 
-//   constructor(props: IPOIProps) {
-//     super(props);
-//     this.state = {json: null};
-//     console.log(Map.fixURL(this.props.info.toString()));
-//     fetch(Map.fixURL(this.props.info))
-//     .then((response) => {
-//       // console.log(response);
-//       return response.json();
-//     })
-//     .then((myJSON) =>{
-      
-//       this.setState({json : myJSON});
-//     })
-//     .catch(error => console.error(`Fetch Error =\n`, error));
-//    console.log(this.state);
-//   }
-  
-
-//   Icons(props) {
-//     var nodes = [];
-//     if(props.attributes){
-//      props.attributes.forEach(function(attribute){
-//         nodes.push(React.createElement("img",
-//           {src : attributeicons[attribute], key: attribute, className : "activity-icon"}, null));
-        
-//      });
-//     }
-//     return React.createElement('div', {id: "attribute-icons"}, nodes);
-//   }
-   public render(){
-      if (!tripstore.activeSidebar){
-          return (<div/>)
+  public handleChange(event: { target: HTMLInputElement; }) {
+    const elementID = (event.target as HTMLElement).dataset.fieldid;
+    const suffix = (event.target as HTMLElement).dataset.suffix;
+    if (elementID){
+      let newVal = event.target.value;
+      if (suffix){
+        newVal = newVal.substring(0, newVal.length-suffix.length);
       }
-      
-    
+      tripstore.setTripProperty(elementID, newVal); 
+    }
+   }
 
+   public render(){
     return (
-      <div className='poi-overlay' id='poi-info' 
-    //   ref={hostRef} 
-      >
-                  <div className = 'poi-inner' id = 'poi-info-inner'>
-            <p>{tripstore.currentTrip}</p>
-          <div className = 'trip-title'>
-              <p id ='trip-title' >{tripstore.payload.active ? tripstore.payload.title : "Loading..."}</p>
+      <Modal pose={tripstore.activePOISidebar ? 'enter' : 'exit'}  className='poi-overlay' id='poi-info'>
+        <div className = 'poi-inner' id = 'poi-info-inner'>
+          <div className = 'trip-title'> 
+          <input type ='text' 
+                id = 'trip-title'
+                  data-fieldid ='title' 
+                  value = { tripstore.payload[tripstore.currentTripId].title } 
+                  onChange={this.handleChange}
+                   />
+              
           </div>
           <div className = 'trip-attributes'>
-              Fucking Loading...
+              Loading...
             {/* <this.Icons attributes = {this.state.json ? this.state.json.attributes : []}/> */}
           </div>
           <div className = 'trip-distance'>
-              <p id = 'trip-distance'>{tripstore.payload.active ? tripstore.payload.distance : "Loading..."} Km</p>
+            <input type ='text' 
+                id = 'trip-distance'
+                  data-fieldid ='distance' 
+                  data-suffix = ' Km'
+                  value = { tripstore.payload[tripstore.currentTripId].distance + ' Km'} 
+                  onChange={this.handleChange}
+                   />
           </div>
           <div className = 'trip-duration'>
-              <p id = 'trip-duration'>{tripstore.payload.active ? tripstore.payload.duration : "Loading..."} days</p>
+              <p id = 'trip-duration'>{tripstore.payload[tripstore.currentTripId].active ? tripstore.payload[tripstore.currentTripId].duration : "Loading..."} days</p>
+              <input type ='text' 
+                id = 'trip-duration'
+                  data-fieldid ='duration' 
+                  value = { tripstore.payload[tripstore.currentTripId].duration } 
+                  onChange={this.handleChange}/> 
+                  <span> days</span>
           </div>
           <div className = 'trip-forecast'>
-              <p id = 'trip-forecast'> {tripstore.payload.active ? tripstore.payload.forecasts : "Loading..."}</p>
+            <span>
+              <p id = 'trip-forecast'> {tripstore.payload[tripstore.currentTripId].active ? tripstore.payload[tripstore.currentTripId].forecasts : "Loading..."}</p>
+              </span>
+            <span>
+                <button onClick = {this.editField} id ='forecast-edit'>edit</button>
+            </span>
               
           </div>
         </div>
         {/* <p id = 'trip-forecast'>{this.state.forecast ? JSON.stringify(this.state.json.forecast) : "Loading"}</p> */}
-        </div>
+        </Modal>
         
       );
   };
