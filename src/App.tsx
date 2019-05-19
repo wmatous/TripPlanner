@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './App.css';
 import {tripstore} from './TripStore';
 
-import { Trip } from './TripStore';
+import { MarkerSource, Trip } from './TripStore';
 
   if(process.env.REACT_APP_MAPBOX_KEY){
     mapboxgl.accessToken =  process.env.REACT_APP_MAPBOX_KEY;
@@ -72,7 +72,7 @@ import { Trip } from './TripStore';
     'generateId': true,
     "type": "geojson",
     
-            };
+    };
   const mapPath = {
     "id": "route",
     
@@ -110,7 +110,6 @@ import { Trip } from './TripStore';
    
 export default class Map extends Component<{/* props */}, {/* state*/ routeColour:boolean }> {
 
-
   public static fixURL(urlstring: string){
     const s = urlstring.indexOf("http://localhost:8000/");
     if (s !== -1){
@@ -121,45 +120,45 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
   }
 
   private map: any;
+
   private mapContainer: any;
   
-   // private hoveredRouteId: any;
 
   constructor(props:any) {
     super(props);
-    // Don't call this.setState() here!
-   //  this.hoveredRouteId =null;
     this.state= {routeColour: true};
   }
-  
 
-
- 
+  public populateMap(thisMap:mapboxgl.Map){
+    this.addMarkers(thisMap, tripstore.payload);
+  }
 
 
 // using thisMap: Map causes issue with last line
-  public addMarkers(thisMap:any, JSONdata:Trip[]){
+  public addMarkers(thisMap:mapboxgl.Map, data:any){
     // add markers to map
-    for(const marker of JSONdata){
-      this.addMarker(thisMap, marker);
+    for(const key of Object.keys(data)){
+      this.addMarker(thisMap, data[key]);
     }
   }
 
-  public addMarker(thisMap:any, marker : Trip){
-    const el = document.createElement('div');
-      el.className = 'marker';
-      el.addEventListener('click',  ()=> {
-        if (marker.id){
-          tripstore.setActiveTrip(marker.id);
-          ;
-        }
-      });
-  
+  public addMarker(thisMap:any, marker : Trip | MarkerSource){
+    const lat = (marker as MarkerSource).lat || (marker as Trip).latitude;
+    const long = (marker as MarkerSource).long || (marker as Trip).longitude;
       // make a marker for each feature and add to the map
-      if (marker.latitude  && marker.longitude){
-      new mapboxgl.Marker(el)
-      .setLngLat([marker.longitude, marker.latitude])
-      .addTo(thisMap);
+      if (lat && long){
+        const el = document.createElement((marker as MarkerSource).element || 'div');
+          el.className = ((marker as MarkerSource).className || 'marker');
+          const id = (marker as Trip).id
+          if (id){
+            el.addEventListener('click',  ()=> {
+                tripstore.setActiveTrip(id);
+            });
+          }
+          
+        new mapboxgl.Marker(el)
+        .setLngLat([long, lat])
+        .addTo(thisMap);
       }
   }
 
@@ -172,12 +171,18 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
       style: 'mapbox://styles/mapbox/streets-v9',
       zoom: 9
     });
+
+    tripstore.fetchData().then((res)=>{
+      this.populateMap(this.map);
+    }).catch((err)=>{
+      console.error(err);
+    });
+
     const thisMap = this.map;
-    // console.log('map el');
+
     thisMap.on('click', (event:any) =>{
-      console.log(event);
       if (tripstore.editMode.editMarker){
-        const newTrip = {
+        const newTrip:Trip = {
           active : true,
           description: 'test',
           distance: '0',
@@ -193,10 +198,10 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
         return;
       }
       else if (tripstore.editMode.editPath){
-return;
+        return;
       }
 
-this.handleNormalMapClick(thisMap);
+      this.handleNormalMapClick(thisMap);
 });
 
     // '/api/trips/?format=json' for deployment
@@ -208,49 +213,12 @@ this.handleNormalMapClick(thisMap);
       this.addMarkers(thisMap, myJSON);
     })
     .catch(error => console.error(`Fetch Error =\n`, error));
+
     thisMap.on('load', () =>{
       thisMap.addSource('pathSource', pathSource)
       thisMap.addLayer(mapPath);
       thisMap.addLayer(pathOutline);
-      thisMap.setFeatureState({source: 'pathSource', id: 'routeOutline'}, { hover: false});
-      thisMap.setFeatureState({source: 'pathSource', id: 'route'}, { hover: false});
   });
-
-  /* thisMap.on("mousemove", "routeOutline", (e:any) => {
-    /* thisMap.setFeatureState({source: 'pathSource', id: 'routeOutline'}, 
-      { hover: !thisMap.getFeatureState({source: 'pathSource', id: 'routeOutline'}).hover});
-    this.setState({routeColour: !this.state.routeColour});
-return; 
-    if (e.features.length > 0) {
-    if (this.hoveredRouteId) {
-    thisMap.setFeatureState({source: 'pathSource', id: this.hoveredRouteId}, { hover: false});
-    }
-    console.log(e);
-    this.hoveredRouteId = e.features[0].id;
-    thisMap.setFeatureState({source: 'pathSource', id: this.hoveredRouteId}, { hover: true});
-    }
-    });
-     
-  
-    thisMap.on("mouseleave", "routeOutline", () => {
-      console.log('leaving');
-      thisMap.setFeatureState({source: 'pathSource', id: 'routeOutline'}, { hover: false});
-      this.setState({routeColour: !this.state.routeColour});
-    }); */
-
-    thisMap.on("mousemove", "routeOutline", (e:any) => {
-      console.log(e);
-      thisMap.setFeatureState({source: 'pathSource', id: 'routeOutline'}, { hover: true});
-      console.log(thisMap.getFeatureState({source: 'pathSource', id: 'routeOutline'}));
-      });
-       
-      // When the mouse leaves the state-fill layer, update the feature state of the
-      // previously hovered feature.
-      thisMap.on("mouseleave", "routeOutline", ()  =>{
-        thisMap.setFeatureState({source: 'pathSource', id: 'routeOutline'}, { hover: false});
-      });
-
-
 
     
   }
@@ -260,6 +228,7 @@ return;
   }
 
   public render() {
+    console.log('rendering');
     
     return <div 
       style ={{position: "absolute", top: 0, bottom: 0, width: "100%"}} 

@@ -26,7 +26,9 @@ export default class ActionSidebar extends Component<{/*props*/}, {/* state*/ }>
 
     public render(){
         return (
-            <Sidebar pose={!tripstore.activePOISidebar ? 'enter' : 'exit'} className = 'actionBarWrapper' >
+            <Sidebar 
+            pose={!tripstore.activePOISidebar ? 'enter' : 'exit'}
+            className = 'actionBarWrapper' >
                 <div className = 'pBetaLogo' onClick= {this.handleLogoClick}>
                     β
                 </div>

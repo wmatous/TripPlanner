@@ -5,16 +5,19 @@ import POISidebar from './POISidebar';
 import {tripstore} from './TripStore';
 
 
-@observer
-export default class Overlay extends Component {
 
-public render(){
+
+export default observer( class Overlay extends Component {
+
+ render(){
 
     return (
     <div className = 'overlayContainer'>
-        {tripstore.payload[tripstore.currentTripId] && tripstore.activePOISidebar? <POISidebar/> : <ActionSidebar/>}
+        <POISidebar/>
+        <ActionSidebar/>
     </div>);
     
 }
 }
+)
 

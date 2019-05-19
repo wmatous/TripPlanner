@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Map from './App';
 import './index.css';
-import Overlay from './Overlay';
+import Overlay from './Overlay.js';
 
 dotenv.config();
 

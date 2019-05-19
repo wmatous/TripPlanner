@@ -1,5 +1,4 @@
 import { action, observable } from "mobx";
-// import { string } from "prop-types";
 
 
 // tslint:disable-next-line:interface-name
@@ -15,7 +14,45 @@ export interface Trip {
     description?: string;
     forecasts?:[URL];
     attributes?: [URL];
+    markers?:{[key:string]:MarkerSource};
+    layers?:{[key:string]: {source:LayerSource, layer:Layer}};
   }
+
+export interface MarkerSource {
+  className:string,
+  element:string,
+  markerId:string,
+  long:number,
+  lat:number
+}
+
+export interface Layer {
+  id: string,  
+  type: string,
+  layout: {[key:string]: string},
+  paint: {[key:string]: any},
+  source? :string
+  };
+
+export interface LayerSource {
+  data: {
+    features: [{
+    geometry: {
+      coordinates: [[
+        number,
+        number
+      ]
+    ],
+      type: string,
+      },
+    properties: {[key:string]: string},
+    type: string,
+    }],
+    type: string,
+  },
+  generateId: boolean,
+  type: string,
+  };
 
   export default class TripStore {
     @observable
@@ -26,25 +63,12 @@ export interface Trip {
     id : 'testId',
     latitude: 49.975046,
     longitude: -123.043000,
-    title: 'Black Tusk',
-    
+    title: 'Black Tusk',    
      }
     };
 
     @observable
-    public currentTripId: string;
-
-    @observable
-    public currentTrip: Trip = {
-      active : true,
-      description: 'brisk hike',
-      distance: '25.1',
-      duration: '10:30:00',
-      id : 'testId',
-      latitude: 49.975046,
-      longitude: -123.043000,
-      title: 'Black Tusk'
-      };
+    public currentTripId: string = 'testId';
 
     @observable
     public activePOISidebar: boolean = false;
@@ -56,6 +80,14 @@ export interface Trip {
         editMarker: false,
         editPath:false
       };
+
+
+    @action
+    public fetchData(){
+      return new Promise((resolve)=>{
+        setTimeout(() => resolve("payload ready"), 2000);
+      })
+    }
 
     @action
     public setEditMode(mode:string, active:boolean){
@@ -82,7 +114,6 @@ export interface Trip {
         newVal = Number(newVal);
       }
       this.payload[this.currentTripId][property] = newVal;
-      console.log(this.payload[this.currentTripId]);
     }
   
   
@@ -91,8 +122,6 @@ export interface Trip {
       if(this.payload[input]){
         this.currentTripId = input;
         this.setSidebar(true);
-        console.log(JSON.stringify(this.payload[this.currentTripId]));
-        console.log(this.currentTripId);
       }
     }
   
@@ -128,38 +157,9 @@ export interface Trip {
     }
 
     @action
-    public updateCurrentTrip(){
-      this.currentTrip = this.payload[this.currentTripId];
-
-
-    
-    /*async () => {
-      this.payload.active = false;
-      const response = await fetch(this.currentTrip.toString());
-      const json = await response.json();
-      if (json){
-        this.payload.active = true;
-        this.payload.url = new URL(json.url);
-        this.payload.id = json.id;
-        this.payload.latitude = json.latitude;
-        this.payload.longitude = json.longitude;
-        this.payload.title = json.title;
-        this.payload.duration = json.duration;
-        this.payload.distance = json.distance;
-        this.payload.description = json.description;
-        this.payload.forecasts = json.forecasts.map(this.URLMap);
-        this.payload.attributes = json.attributes.map(this.URLMap);
-      }
-      */
+    public clearPayload(){
+      this.payload = {};
     }
 
-      @action
-      public clearPayload(){
-        this.payload = {};
-      }
-      
-
-    
-  
   }
   export const tripstore = new TripStore();

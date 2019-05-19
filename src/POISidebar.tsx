@@ -1,9 +1,7 @@
 import {observer} from 'mobx-react';
-
 import React, { Component } from 'react';
 import posed from 'react-pose';
 import './POISidebar.css';
-
 import { tripstore } from './TripStore';
 
 
@@ -42,14 +40,21 @@ export default class POISidebar extends Component<{}, {}>
    }
 
    public render(){
+     let tripToRender = tripstore.payload[tripstore.currentTripId];
+     if (!tripToRender){
+       tripToRender = {id:''};
+     }
     return (
-      <Modal pose={tripstore.activePOISidebar ? 'enter' : 'exit'}  className='poi-overlay' id='poi-info'>
+      <Modal 
+        pose={tripstore.activePOISidebar ? 'enter' : 'exit'} 
+        className='poi-overlay' id='poi-info'>
+
         <div className = 'poi-inner' id = 'poi-info-inner'>
           <div className = 'trip-title'> 
           <input type ='text' 
                 id = 'trip-title'
                   data-fieldid ='title' 
-                  value = { tripstore.payload[tripstore.currentTripId].title } 
+                  value = { tripToRender.title } 
                   onChange={this.handleChange}
                    />
               
@@ -63,22 +68,22 @@ export default class POISidebar extends Component<{}, {}>
                 id = 'trip-distance'
                   data-fieldid ='distance' 
                   data-suffix = ' Km'
-                  value = { tripstore.payload[tripstore.currentTripId].distance + ' Km'} 
+                  value = { tripToRender.distance + ' Km'} 
                   onChange={this.handleChange}
                    />
           </div>
           <div className = 'trip-duration'>
-              <p id = 'trip-duration'>{tripstore.payload[tripstore.currentTripId].active ? tripstore.payload[tripstore.currentTripId].duration : "Loading..."} days</p>
+              <p id = 'trip-duration'>{tripToRender.active ? tripToRender.duration : "Loading..."} days</p>
               <input type ='text' 
                 id = 'trip-duration'
                   data-fieldid ='duration' 
-                  value = { tripstore.payload[tripstore.currentTripId].duration } 
+                  value = { tripToRender.duration } 
                   onChange={this.handleChange}/> 
                   <span> days</span>
           </div>
           <div className = 'trip-forecast'>
             <span>
-              <p id = 'trip-forecast'> {tripstore.payload[tripstore.currentTripId].active ? tripstore.payload[tripstore.currentTripId].forecasts : "Loading..."}</p>
+              <p id = 'trip-forecast'> {tripToRender.active ? tripToRender.forecasts : "Loading..."}</p>
               </span>
             <span>
                 <button onClick = {this.editField} id ='forecast-edit'>edit</button>
