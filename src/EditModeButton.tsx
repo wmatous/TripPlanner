@@ -1,8 +1,10 @@
+import {observer} from 'mobx-react';
 import React, { Component } from 'react';
 import './ActionSidebar.css';
 import { tripstore } from './TripStore';
 
-export default class EditModeButton extends Component<{imgSrc:string, activeMode:boolean, mode:string /* props */}, {/* state*/ }>
+@observer
+export default class EditModeButton extends Component<{imgSrc:string, mode:string /* props */}, {/* state*/ }>
 {
 
     constructor(props:any) {
@@ -11,13 +13,13 @@ export default class EditModeButton extends Component<{imgSrc:string, activeMode
     }
 
     public setEditMode(){
-        tripstore.setEditMode(this.props.mode, !this.props.activeMode);
+        tripstore.setEditMode(this.props.mode, !tripstore.editMode[this.props.mode]);
     }
 
     public render(){
         return (
         <img className = 'actionMarker'
-            data-activemode = {JSON.stringify(this.props.activeMode)}
+            data-activemode = {tripstore.editMode[this.props.mode]}
             src = {this.props.imgSrc} 
             onClick = {this.setEditMode}/>
         );

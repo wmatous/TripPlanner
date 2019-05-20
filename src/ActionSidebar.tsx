@@ -1,10 +1,8 @@
-import {observer} from 'mobx-react';
 
 import React, { Component } from 'react';
 import posed from 'react-pose';
 import './ActionSidebar.css';
 import EditModeButton from './EditModeButton';
-import { tripstore } from './TripStore';
 
 const Sidebar = posed.div({
     enter: {
@@ -17,9 +15,16 @@ const Sidebar = posed.div({
     }
   });
 
-@observer
-export default class ActionSidebar extends Component<{/*props*/}, {/* state*/ }>
+export default class ActionSidebar extends Component<{icons:[{imgSrc:string, mode:string}], active:boolean/*props*/}, {/* state*/ }>
 {
+
+    public buttons = this.props.icons.map((item:{imgSrc:string, mode:string})=>(
+        <EditModeButton 
+            imgSrc = {item.imgSrc}  
+            mode = {item.mode} 
+            key = {item.mode} />
+    ));
+
     public handleLogoClick(){
         alert('Welcome to Project Beta');
     }
@@ -27,19 +32,10 @@ export default class ActionSidebar extends Component<{/*props*/}, {/* state*/ }>
     public render(){
         return (
             <Sidebar 
-            pose={!tripstore.activePOISidebar ? 'enter' : 'exit'}
+            pose={!this.props.active ? 'enter' : 'exit'}
             className = 'actionBarWrapper' >
-                <div className = 'pBetaLogo' onClick= {this.handleLogoClick}>
-                    β
-                </div>
-                <EditModeButton 
-                    imgSrc = './newMarker.png' 
-                    activeMode = {tripstore.editMode.editMarker} 
-                    mode= 'editMarker' />
-                <EditModeButton 
-                    imgSrc = './pathEdit.png' 
-                    activeMode = {tripstore.editMode.editPath} 
-                    mode= 'editPath' />
+                {this.props.children}
+                {this.buttons}
             </Sidebar>
 
         ); 

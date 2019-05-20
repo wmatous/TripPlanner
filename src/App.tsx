@@ -1,4 +1,4 @@
-import mapboxgl from 'mapbox-gl';
+import mapboxgl, {LngLat} from 'mapbox-gl';
 import React, { Component } from 'react';
 import './App.css';
 import {tripstore} from './TripStore';
@@ -142,7 +142,7 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
     }
   }
 
-  public addMarker(thisMap:any, marker : Trip | MarkerSource){
+  public addMarker(thisMap:mapboxgl.Map, marker : Trip | MarkerSource){
     const lat = (marker as MarkerSource).lat || (marker as Trip).latitude;
     const long = (marker as MarkerSource).long || (marker as Trip).longitude;
       // make a marker for each feature and add to the map
@@ -153,8 +153,21 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
           if (id){
             el.addEventListener('click',  ()=> {
                 tripstore.setActiveTrip(id);
-            });
-          }
+                if (tripstore.setActiveTrip(id) &&
+                    tripstore.payload[tripstore.currentTripId].latitude &&
+                    tripstore.payload[tripstore.currentTripId].longitude){
+                     thisMap.flyTo({center:new LngLat(
+                      Number(tripstore.payload[tripstore.currentTripId].longitude),
+                      Number(tripstore.payload[tripstore.currentTripId].latitude)
+                        )
+                      });
+
+
+                  }
+                  });
+                  }
+              
+          
           
         new mapboxgl.Marker(el)
         .setLngLat([long, lat])
@@ -181,7 +194,9 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
     const thisMap = this.map;
 
     thisMap.on('click', (event:any) =>{
+
       if (tripstore.editMode.editMarker){
+
         const newTrip:Trip = {
           active : true,
           description: 'test',
@@ -192,9 +207,12 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
           longitude: event.lngLat.lng,
           title: 'test'
           };
+
         tripstore.setEditMode('editMarker', false);
         this.addMarker(thisMap, newTrip);
         tripstore.addTrip(newTrip);
+        console.log({center: event.lngLat});
+        thisMap.flyTo({center: event.lngLat});
         return;
       }
       else if (tripstore.editMode.editPath){

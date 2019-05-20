@@ -118,11 +118,14 @@ export interface LayerSource {
   
   
     @action
-    public setActiveTrip(input: string) {
+    public setActiveTrip(input: string):boolean {
       if(this.payload[input]){
+        const prev = this.currentTripId === input;
         this.currentTripId = input;
         this.setSidebar(true);
+        return prev;
       }
+      return false;
     }
   
     public URLMap(input: string){
