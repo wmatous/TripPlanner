@@ -1,4 +1,4 @@
-import { action, observable } from "mobx";
+import { action,computed, observable } from "mobx";
 
 
 // tslint:disable-next-line:interface-name
@@ -34,23 +34,24 @@ export interface Layer {
   source? :string
   };
 
+interface LayerData {
+  features: [{
+  geometry: {
+    coordinates: [[
+      number,
+      number
+    ]
+  ],
+    type: string,
+    },
+  properties: {[key:string]: string},
+  type: string,
+  }],
+  type: string,
+}
 export interface LayerSource {
-  data: {
-    features: [{
-    geometry: {
-      coordinates: [[
-        number,
-        number
-      ]
-    ],
-      type: string,
-      },
-    properties: {[key:string]: string},
-    type: string,
-    }],
-    type: string,
-  },
-  generateId: boolean,
+  data: LayerData,
+  id: string,
   type: string,
   };
 
@@ -71,6 +72,10 @@ export interface LayerSource {
     public currentTripId: string = 'testId';
 
     @observable
+    public currentLayer :{trip:string, layer:string, source:string} | null = null;
+
+
+    @observable
     public activePOISidebar: boolean = false;
 
 
@@ -80,6 +85,48 @@ export interface LayerSource {
         editMarker: false,
         editPath:false
       };
+
+    @computed get currentLayerSource():string {
+      try{
+        return this.payload[this.currentLayer!.trip].layers![this.currentLayer!.layer].layer.source!;
+      } catch(e){
+        return '';
+      }
+    }
+
+    @computed get currentLayerSourceData():LayerData | null{
+      try{
+        return this.payload[this.currentLayer!.trip].layers![this.currentLayer!.layer].source.data!;
+      } catch(e){
+        return null;
+      }
+    }
+    
+    @action
+    public resetEditMode(){
+      this.editMode = {
+        editMarker: false,
+        editPath:false
+      };
+    }
+
+    @action
+    public setCurrentLayer(newLayer:{trip:string, layer:string, source:string} | null){
+      if(newLayer){
+        this.currentTripId = newLayer.trip;
+      }
+      this.currentLayer = newLayer;
+    }
+
+    @action
+    public setCurrentSourceData(data:LayerData){
+      try{
+      this.payload[this.currentLayer!.trip].layers![this.currentLayer!.layer].source.data = data;
+      } catch(e){
+        console.error(e);
+        console.error('problem updating source data');
+      }
+    }
 
 
     @action
@@ -122,7 +169,6 @@ export interface LayerSource {
       if(this.payload[input]){
         const prev = this.currentTripId === input;
         this.currentTripId = input;
-        this.setSidebar(true);
         return prev;
       }
       return false;
@@ -154,9 +200,15 @@ export interface LayerSource {
     }
 
     @action
-    public addTrip(newTrip:Trip){
+    public updateTrip(newTrip:Trip){
+      const existingTrip = this.payload[newTrip.id];
       this.payload[newTrip.id] = newTrip;
       this.setActiveTrip(newTrip.id);
+      return existingTrip;
+    }
+    @action
+    public deleteTrip(tripId:string){
+      delete this.payload[tripId];
     }
 
     @action

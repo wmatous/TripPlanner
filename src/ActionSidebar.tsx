@@ -1,27 +1,31 @@
 
 import React, { Component } from 'react';
 import posed from 'react-pose';
+import ActionButton from './ActionButton';
 import './ActionSidebar.css';
-import EditModeButton from './EditModeButton';
 
-const Sidebar = posed.div({
+
+export const Sidebar = posed.div({
     enter: {
       opacity: 1,
+      top:0,
       transition: { duration: 600 }
     },
     exit: {
       opacity: 0,
+      top:0,
       transition: { duration: 600 }
     }
   });
 
-export default class ActionSidebar extends Component<{icons:[{imgSrc:string, mode:string}], active:boolean/*props*/}, {/* state*/ }>
+export default class ActionSidebar extends Component<{icons:[{imgSrc:string, mode:string, action:(arg0:any)=> null}], /*props*/}, {/* state*/ }>
 {
 
-    public buttons = this.props.icons.map((item:{imgSrc:string, mode:string})=>(
-        <EditModeButton 
+    public buttons = this.props.icons.map((item:{imgSrc:string, mode:string, action:(arg0:any)=>null})=>(
+        <ActionButton 
+            action={item.action}
             imgSrc = {item.imgSrc}  
-            mode = {item.mode} 
+            mode = {item.mode}
             key = {item.mode} />
     ));
 
@@ -31,12 +35,11 @@ export default class ActionSidebar extends Component<{icons:[{imgSrc:string, mod
 
     public render(){
         return (
-            <Sidebar 
-            pose={!this.props.active ? 'enter' : 'exit'}
+            <div 
             className = 'actionBarWrapper' >
                 {this.props.children}
                 {this.buttons}
-            </Sidebar>
+            </div>
 
         ); 
 

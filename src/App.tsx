@@ -76,7 +76,7 @@ import { MarkerSource, Trip } from './TripStore';
   const mapPath = {
     "id": "route",
     
-"type": "line",
+      "type": "line",
 
         "layout": {
           "line-cap": "round",
@@ -88,7 +88,7 @@ import { MarkerSource, Trip } from './TripStore';
           "line-width": 8
         },
         "source": 'pathSource'
-        };
+      };
 
     const pathOutline = {
           "id": "routeOutline",
@@ -166,9 +166,6 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
                   }
                   });
                   }
-              
-          
-          
         new mapboxgl.Marker(el)
         .setLngLat([long, lat])
         .addTo(thisMap);
@@ -181,7 +178,7 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
     this.map = new mapboxgl.Map({
       center: [-122.889, 49.366021],
       container: this.mapContainer,
-      style: 'mapbox://styles/mapbox/streets-v9',
+      style: 'mapbox://styles/mapbox/satellite-v9',
       zoom: 9
     });
 
@@ -207,15 +204,88 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
           longitude: event.lngLat.lng,
           title: 'test'
           };
-
         tripstore.setEditMode('editMarker', false);
         this.addMarker(thisMap, newTrip);
-        tripstore.addTrip(newTrip);
-        console.log({center: event.lngLat});
+        tripstore.updateTrip(newTrip);
+        tripstore.setSidebar(true);
         thisMap.flyTo({center: event.lngLat});
         return;
       }
       else if (tripstore.editMode.editPath){
+        if (tripstore.currentLayer){
+          try{
+            const sourceId = tripstore.currentLayer.source;
+            const mapSource = thisMap.getSource(sourceId);
+            
+            if(mapSource){
+              const data = mapSource._data;
+              data.features[0].geometry.coordinates.push([
+                event.lngLat.lng,
+                event.lngLat.lat
+              ]);
+              mapSource.setData(data);
+              thisMap.panTo([
+                event.lngLat.lng,
+                event.lngLat.lat
+              ]);
+              tripstore.setCurrentSourceData(data);
+            }
+          } catch(e){
+            console.log(e);
+            console.error('Problem Updating path');
+          }
+
+        } else{
+
+        
+        
+        const tripId =  Math.random().toString(36).substring(7);
+        const sourceId = tripId +  Math.random().toString(36).substring(7);
+        const layerId = tripId +  Math.random().toString(36).substring(7);
+        
+        const newPathSource = {
+          "data": {
+            'features': [{
+            "geometry": {
+              "coordinates": [[
+                event.lngLat.lng,
+                event.lngLat.lat
+              ]
+            ],
+              "type": "LineString",
+              },
+            "properties": {'color': '#33C9EB'},
+            "type": "Feature",
+            }],
+            'type': 'FeatureCollection',
+          },
+          "type": "geojson",
+          };
+          
+          thisMap.addSource(sourceId, newPathSource);
+          const newMapPath = {
+            "id": layerId,
+            "layout": {
+              "line-cap": "round",
+            "line-join": "round"
+            },
+            "paint": {
+              'line-color': ['get', 'color'],
+              "line-width": 8
+            },
+            "source": sourceId,
+              "type": "line"              
+          };
+          thisMap.addLayer(newMapPath);
+          const newlayers=  {};
+          newlayers[layerId] = {source:newPathSource, layer:newMapPath};
+          const newTrip = {
+            id: tripId,
+            layers: newlayers
+          };
+          tripstore.updateTrip(newTrip);
+          tripstore.setCurrentLayer({trip:tripId, layer:layerId, source:sourceId});
+        }
         return;
       }
 
@@ -246,7 +316,6 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
   }
 
   public render() {
-    console.log('rendering');
     
     return <div 
       style ={{position: "absolute", top: 0, bottom: 0, width: "100%"}} 

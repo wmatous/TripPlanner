@@ -5,7 +5,7 @@ import './POISidebar.css';
 import { tripstore } from './TripStore';
 
 
-const Modal = posed.div({
+export const Modal = posed.div({
   enter: {
     opacity: 1,
     transition: { duration: 600 },
@@ -46,9 +46,7 @@ export default class POISidebar extends Component<{}, {}>
      }
     return (
       <Modal 
-        pose={tripstore.activePOISidebar ? 'enter' : 'exit'} 
         className='poi-overlay' id='poi-info'>
-
         <div className = 'poi-inner' id = 'poi-info-inner'>
           <div className = 'trip-title'> 
           <input type ='text' 
@@ -57,7 +55,6 @@ export default class POISidebar extends Component<{}, {}>
                   value = { tripToRender.title } 
                   onChange={this.handleChange}
                    />
-              
           </div>
           <div className = 'trip-attributes'>
               Loading...
