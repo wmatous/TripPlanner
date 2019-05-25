@@ -71,7 +71,6 @@ export default observer( class Overlay extends Component {
                             β
                         </div>
                     </ActionSidebar>
-                    <ActionSidebar  icons = {this.defaultButtons}/>
                 </Sidebar>
                 ]}
                 {tripstore.activePOISidebar && [

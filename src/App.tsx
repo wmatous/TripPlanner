@@ -187,8 +187,88 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
     }).catch((err)=>{
       console.error(err);
     });
-
     const thisMap = this.map;
+
+    this.mapContainer.addEventListener('dragover', (e:any)=>{
+      e = e || event;
+      e.preventDefault();
+    });
+    this.mapContainer.addEventListener('drop', (e:any)=>{
+      e = e || event;
+      e.stopPropagation();
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      console.log(files);
+      const reader = new FileReader();
+      reader.onload =(theFile:any)=>{
+        const oParser = new DOMParser();
+        const oDOM = oParser.parseFromString(theFile.target.result, "application/xml");
+        const trkpts = oDOM.getElementsByTagName('trkpt');
+        const latLonData = [];
+        for(const field of Object.keys(trkpts)){
+          latLonData.push(
+            [
+              Number(trkpts[field].getAttribute('lon')),
+              Number(trkpts[field].getAttribute('lat'))
+            ]);
+        }
+        console.log(latLonData);
+        const tripId =  Math.random().toString(36).substring(7);
+        const sourceId = tripId +  Math.random().toString(36).substring(7);
+        const layerId = tripId +  Math.random().toString(36).substring(7);
+        
+        const newPathSource = {
+          "data": {
+            'features': [{
+            "geometry": {
+              "coordinates": latLonData,
+              "type": "LineString",
+              },
+            "properties": {'color': '#33C9EB'},
+            "type": "Feature",
+            }],
+            'type': 'FeatureCollection',
+          },
+          "type": "geojson",
+          };
+          console.log(newPathSource);
+          console.log(thisMap);
+          console.log(thisMap.addSource);
+
+          thisMap.addSource(sourceId, newPathSource);
+          const newMapPath = {
+            "id": layerId,
+            "layout": {
+              "line-cap": "round",
+            "line-join": "round"
+            },
+            "paint": {
+              'line-color': ['get', 'color'],
+              "line-width": 8
+            },
+            "source": sourceId,
+              "type": "line"              
+          };
+          thisMap.addLayer(newMapPath);
+          thisMap.panTo(latLonData[0]);
+          const newlayers=  {};
+          newlayers[layerId] = {source:newPathSource, layer:newMapPath};
+          const newTrip = {
+            id: tripId,
+            layers: newlayers
+          };
+          tripstore.updateTrip(newTrip);
+          tripstore.setCurrentLayer({trip:tripId, layer:layerId, source:sourceId});
+
+      };
+      reader.readAsText(files[0]);
+    }); 
+    window.addEventListener('drop', (e:any)=> {
+      e = e || event;
+      e.preventDefault()});
+    
 
     thisMap.on('click', (event:any) =>{
 
