@@ -8,5 +8,6 @@
         "deque": "c",
         "string": "c",
         "string_view": "c"
-    }
+    },
+    "javascript.implicitProjectConfig.experimentalDecorators": true
 }
