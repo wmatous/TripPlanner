@@ -1,5 +1,5 @@
 import {observer} from 'mobx-react';
-import React, { Component } from 'react';
+import * as React from 'react';
 import posed from 'react-pose';
 import './POISidebar.css';
 import { tripstore } from './TripStore';
@@ -20,7 +20,7 @@ export const Modal = posed.div({
 
 
 @observer
-export default class POISidebar extends Component<{}, {}>
+export default class POISidebar extends React.Component<{}, {}>
 {
 
   public editField(event: React.MouseEvent<HTMLElement>) {

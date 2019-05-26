@@ -1,12 +1,12 @@
-import mapboxgl, {LngLat} from 'mapbox-gl';
-import React, { Component } from 'react';
+import * as mapboxgl  from 'mapbox-gl';
+import * as React from 'react';
 import './App.css';
 import {tripstore} from './TripStore';
 
 import { MarkerSource, Trip } from './TripStore';
 
   if(process.env.REACT_APP_MAPBOX_KEY){
-    mapboxgl.accessToken =  process.env.REACT_APP_MAPBOX_KEY;
+    (mapboxgl as typeof mapboxgl).accessToken =  process.env.REACT_APP_MAPBOX_KEY;
   } else {
     // handle the issue;
   }
@@ -108,7 +108,7 @@ import { MarkerSource, Trip } from './TripStore';
       "type": "fill",
     };
    
-export default class Map extends Component<{/* props */}, {/* state*/ routeColour:boolean }> {
+export default class Map extends React.Component<{/* props */}, {/* state*/ routeColour:boolean }> {
 
   public static fixURL(urlstring: string){
     const s = urlstring.indexOf("http://localhost:8000/");
@@ -153,10 +153,11 @@ export default class Map extends Component<{/* props */}, {/* state*/ routeColou
           if (id){
             el.addEventListener('click',  ()=> {
                 tripstore.setActiveTrip(id);
+                tripstore.setSidebar(true);
                 if (tripstore.setActiveTrip(id) &&
                     tripstore.payload[tripstore.currentTripId].latitude &&
                     tripstore.payload[tripstore.currentTripId].longitude){
-                     thisMap.flyTo({center:new LngLat(
+                     thisMap.flyTo({center:new mapboxgl.LngLat(
                       Number(tripstore.payload[tripstore.currentTripId].longitude),
                       Number(tripstore.payload[tripstore.currentTripId].latitude)
                         )

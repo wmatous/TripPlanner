@@ -1,4 +1,4 @@
-import { action,computed, observable } from "mobx";
+import { action, computed, observable } from "mobx";
 
 
 // tslint:disable-next-line:interface-name

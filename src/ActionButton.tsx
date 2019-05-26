@@ -1,10 +1,10 @@
 import {observer} from 'mobx-react';
-import React, { Component } from 'react';
+import * as React from 'react';
 import './ActionSidebar.css';
 import { tripstore } from './TripStore';
 
 @observer
-export default class ActionButton extends Component<{imgSrc:string, mode:string, action:(arg0:any)=> null /* props */}, {/* state*/ }>
+export default class ActionButton extends React.Component<{imgSrc:string, mode:string, action:(arg0:any)=> null /* props */}, {/* state*/ }>
 {
 
     public render(){

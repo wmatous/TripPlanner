@@ -1,5 +1,5 @@
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import posed from 'react-pose';
 import ActionButton from './ActionButton';
 import './ActionSidebar.css';
@@ -18,7 +18,7 @@ export const Sidebar = posed.div({
     }
   });
 
-export default class ActionSidebar extends Component<{icons:[{imgSrc:string, mode:string, action:(arg0:any)=> null}], /*props*/}, {/* state*/ }>
+export default class ActionSidebar extends React.Component<{icons:[{imgSrc:string, mode:string, action:(arg0:any)=> null}], /*props*/}, {/* state*/ }>
 {
 
     public buttons = this.props.icons.map((item:{imgSrc:string, mode:string, action:(arg0:any)=>null})=>(
