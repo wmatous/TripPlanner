@@ -136,6 +136,8 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
 
 // using thisMap: Map causes issue with last line
   public addMarkers(thisMap:mapboxgl.Map, data:any){
+    console.error(data);
+    console.error(thisMap);
     // add markers to map
     for(const key of Object.keys(data)){
       this.addMarker(thisMap, data[key]);
@@ -380,6 +382,7 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
       return response.json();
     })
     .then((myJSON) =>{
+      console.error(myJSON);
       this.addMarkers(thisMap, myJSON);
     })
     .catch(error => console.error(`Fetch Error =\n`, error));
