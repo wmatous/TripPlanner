@@ -373,6 +373,8 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
       this.handleNormalMapClick(thisMap);
 });
 
+    // '/api/trips/?format=json' for deployment
+    try{
     fetch(process.env.REACT_APP_API_URL!)
     .then((response) => {
       return response.json();
@@ -389,6 +391,9 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
   });
 
     
+      } catch(e){
+      console.error(e);
+    }
   }
 
   public componentWillUnmount() {
