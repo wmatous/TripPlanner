@@ -373,8 +373,7 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
       this.handleNormalMapClick(thisMap);
 });
 
-    // '/api/trips/?format=json' for deployment
-    fetch('trips/')
+    fetch(process.env.REACT_APP_API_URL!)
     .then((response) => {
       return response.json();
     })
