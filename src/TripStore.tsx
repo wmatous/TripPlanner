@@ -131,9 +131,20 @@ export interface LayerSource {
 
     @action
     public fetchData(){
-      return new Promise((resolve)=>{
-        setTimeout(() => resolve("payload ready"), 2000);
-      })
+       // '/api/trips/?format=json' for deployment
+    
+    return fetch(process.env.REACT_APP_API_URL!)
+    .then((response) => {
+      return response.json();
+    })
+    .then((json:[Trip])=>{
+      json.forEach(element => {
+        this.payload[element.id] = element;
+        
+      });
+
+    })
+    .catch(error => console.error(`Fetch Error =\n`, error));
     }
 
     @action
