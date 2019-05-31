@@ -3,6 +3,7 @@ import * as React from 'react';
 import './App.css';
 import {tripstore} from './TripStore';
 
+
 import { MarkerSource, Trip } from './TripStore';
 
   if(process.env.REACT_APP_MAPBOX_KEY){
@@ -34,7 +35,6 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
   }
 
   public populateMap(thisMap:mapboxgl.Map){
-    console.log(tripstore.payload);
     this.addMarkers(thisMap, tripstore.payload);
   }
 
@@ -81,6 +81,7 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
   
 
   public componentDidMount() {
+    
     this.map = new mapboxgl.Map({
       center: [-122.889, 49.366021],
       container: this.mapContainer,
@@ -106,7 +107,6 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
       e.dataTransfer.dropEffect = 'copy';
       const dt = e.dataTransfer;
       const files = dt.files;
-      console.log(files);
       const reader = new FileReader();
       reader.onload =(theFile:any)=>{
         const oParser = new DOMParser();
@@ -120,7 +120,7 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
               Number(trkpts[field].getAttribute('lat'))
             ]);
         }
-        console.log(latLonData);
+
         const tripId =  Math.random().toString(36).substring(7);
         const sourceId = tripId +  Math.random().toString(36).substring(7);
         const layerId = tripId +  Math.random().toString(36).substring(7);
@@ -139,9 +139,6 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
           },
           "type": "geojson",
           };
-          console.log(newPathSource);
-          console.log(thisMap);
-          console.log(thisMap.addSource);
 
           thisMap.addSource(sourceId, newPathSource);
           const newMapPath = {
