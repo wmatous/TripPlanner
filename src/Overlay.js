@@ -10,11 +10,9 @@ import {tripstore} from './TripStore';
 export default observer( class Overlay extends Component {
 
     handleLogoClick(){
-        const clientId = '428027613728-74jimv7nkccjoc0iq2jbiqen0kf1d94l.apps.googleusercontent.com';
-        const redirectURI='http://localhost:3000/postlogin';
         window.location = 'https://accounts.google.com/o/oauth2/v2/auth?response_type=token&client_id='
-            +clientId+'&redirect_uri='
-            +redirectURI+'&scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile';
+            +process.env.REACT_APP_CLIENT_ID+'&redirect_uri='
+            +process.env.REACT_APP_REDIRECT_URI+'&scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile';
     }
 
     setEditMode = (event)=>{
