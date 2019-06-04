@@ -40,38 +40,30 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
 
 
 // using thisMap: Map causes issue with last line
-  public addMarkers(thisMap:mapboxgl.Map, data:any){
+  public addMarkers(thisMap:mapboxgl.Map, data:{[key:string]:Trip}){
     // add markers to map
     for(const key of Object.keys(data)){
-      this.addMarker(thisMap, data[key]);
+      const markerObject = data[key].markers;
+      if (markerObject){
+        Object.keys(markerObject).forEach(e => this.addMarker(thisMap, markerObject[e]));
+      }
     }
   }
 
-  public addMarker(thisMap:mapboxgl.Map, marker : Trip | MarkerSource){
-    const lat = (marker as MarkerSource).lat || (marker as Trip).latitude;
-    const long = (marker as MarkerSource).long || (marker as Trip).longitude;
+  public addMarker(thisMap:mapboxgl.Map, marker : MarkerSource){
+    const lat = marker.lat;
+    const long = marker.long;
       // make a marker for each feature and add to the map
       if (lat && long){
-        const el = document.createElement((marker as MarkerSource).element || 'div');
-          el.className = ((marker as MarkerSource).className || 'marker');
-          const id = (marker as Trip).id
-          if (id){
-            el.addEventListener('click',  ()=> {
-                tripstore.setActiveTrip(id);
-                tripstore.setSidebar(true);
-                if (tripstore.setActiveTrip(id) &&
-                    tripstore.payload[tripstore.currentTripId].latitude &&
-                    tripstore.payload[tripstore.currentTripId].longitude){
-                     thisMap.flyTo({center:new mapboxgl.LngLat(
-                      Number(tripstore.payload[tripstore.currentTripId].longitude),
-                      Number(tripstore.payload[tripstore.currentTripId].latitude)
-                        )
-                      });
-
-
-                  }
-                  });
-                  }
+        const el = document.createElement(marker.element || 'div');
+          el.className = (marker.className || 'marker');
+          el.addEventListener('click',  ()=> {
+              tripstore.setActiveTrip(marker.markerId);
+              tripstore.setSidebar(true);
+              thisMap.flyTo({center:new mapboxgl.LngLat(long,lat)
+              });
+            });
+                
         new mapboxgl.Marker(el)
         .setLngLat([long, lat])
         .addTo(thisMap);
@@ -122,7 +114,6 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
         }
 
         const tripId =  Math.random().toString(36).substring(7);
-        const sourceId = tripId +  Math.random().toString(36).substring(7);
         const layerId = tripId +  Math.random().toString(36).substring(7);
         
         const newPathSource = {
@@ -140,7 +131,7 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
           "type": "geojson",
           };
 
-          thisMap.addSource(sourceId, newPathSource);
+          thisMap.addSource(layerId, newPathSource);
           const newMapPath = {
             "id": layerId,
             "layout": {
@@ -151,7 +142,7 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
               'line-color': ['get', 'color'],
               "line-width": 8
             },
-            "source": sourceId,
+            "source": layerId,
               "type": "line"              
           };
           thisMap.addLayer(newMapPath);
@@ -163,7 +154,7 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
             layers: newlayers
           };
           tripstore.updateTrip(newTrip);
-          tripstore.setCurrentLayer({trip:tripId, layer:layerId, source:sourceId});
+          tripstore.setCurrentLayer({trip:tripId, layer:layerId, source:layerId});
 
       };
       reader.readAsText(files[0]);
@@ -176,19 +167,25 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
     thisMap.on('click', (event:any) =>{
 
       if (tripstore.editMode.editMarker){
-
+        const newMarkerId = Math.random().toString(36).substring(7);
+        const newMarkers = {};
+        newMarkers[newMarkerId]=
+          {
+            className: 'marker',
+            element: 'div',
+            lat: event.lngLat.lat,
+            long: event.lngLat.lng,
+            markerId: newMarkerId
+          }; 
+        
         const newTrip:Trip = {
-          active : true,
           description: 'test',
-          distance: '0',
-          duration: '0',
           id: Math.random().toString(36).substring(7),
-          latitude: event.lngLat.lat,
-          longitude: event.lngLat.lng,
-          title: 'test'
+          markers: newMarkers,
+          title: 'test',
           };
         tripstore.setEditMode('editMarker', false);
-        this.addMarker(thisMap, newTrip);
+        this.addMarker(thisMap, newMarkers[newMarkerId]);
         tripstore.updateTrip(newTrip);
         tripstore.setSidebar(true);
         thisMap.flyTo({center: event.lngLat});
@@ -214,7 +211,6 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ rout
               tripstore.setCurrentSourceData(data);
             }
           } catch(e){
-            console.log(e);
             console.error('Problem Updating path');
           }
 

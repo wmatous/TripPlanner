@@ -1,4 +1,5 @@
 import { action, computed, observable } from "mobx";
+import {apiService} from './APIService';
 
 
 // tslint:disable-next-line:interface-name
@@ -23,7 +24,8 @@ export interface MarkerSource {
   element:string,
   markerId:string,
   long:number,
-  lat:number
+  lat:number,
+  ts: string
 }
 
 export interface Layer {
@@ -57,19 +59,10 @@ export interface LayerSource {
 
   export default class TripStore {
     @observable
-    public payload: { [key:string]:Trip; } = { 'testId': {
-    description: 'brisk hike',
-    distance: '25.1',
-    duration: '10:30:00',
-    id : 'testId',
-    latitude: 49.975046,
-    longitude: -123.043000,
-    title: 'Black Tusk',    
-     }
-    };
+    public payload: { [key:string]:Trip; } = {};
 
     @observable
-    public currentTripId: string = 'testId';
+    public currentTripId: string ='';
 
     @observable
     public currentLayer :{trip:string, layer:string, source:string} | null = null;
@@ -131,20 +124,21 @@ export interface LayerSource {
 
     @action
     public fetchData(){
-       // '/api/trips/?format=json' for deployment
-    
-    return fetch(process.env.REACT_APP_API_URL!)
-    .then((response) => {
-      return response.json();
-    })
-    .then((json:[Trip])=>{
-      json.forEach(element => {
-        this.payload[element.id] = element;
-        
-      });
-
-    })
+      try{
+    return apiService.fetchTrips()
+    .then((response) => 
+      response.json())
+    .then((data) => {
+      console.log(data);
+      data.forEach((element:{[key:string]:any}) =>
+        this.payload[element.id] = apiService.dbToTrip(element)
+      );
+      return data;})
     .catch(error => console.error(`Fetch Error =\n`, error));
+      } catch (err){
+        console.error(err);
+      }
+      return new Promise((reject) => reject());
     }
 
     @action
@@ -226,6 +220,6 @@ export interface LayerSource {
     public clearPayload(){
       this.payload = {};
     }
-
-  }
+   
+}
   export const tripstore = new TripStore();

@@ -22,5 +22,3 @@ if(window.location.pathname ==='/postlogin'){
     ReactDOM.render(<Overlay   />, document.getElementById('overlay-wrapper'));
 }
 
-
-

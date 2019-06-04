@@ -62,7 +62,6 @@ export default observer( class Overlay extends Component {
         mode: 'reject'
         }
     ];
-
       
 
  render(){

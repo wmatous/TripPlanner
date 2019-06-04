@@ -1,4 +1,8 @@
 .DS_Store
 node_modules/
 .env 
+build/
+package-lock.json
+package.json
+yarn-error.log
 # This contains secrets, don't store in source control
