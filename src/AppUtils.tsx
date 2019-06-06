@@ -1,11 +1,5 @@
 import * as mapboxgl  from 'mapbox-gl';
-import {tripstore, DBLayer, Trip} from './TripStore';
-
-
-
-import { MarkerSource, LayerPoint} from './TripStore';
-import {apiService} from './APIService';
-
+import {tripstore, DBLayer, Trip, MarkerSource, LayerPoint} from './TripStore';
 
 export default class AppUtils {
 
@@ -69,7 +63,7 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
       };
       reader.readAsText(files[0]);
     }
-
+    // @ts-ignore
     public static handleMapClick(event:any, thisMap: mapboxgl.Map) {
 
         if (tripstore.editMode.editMarker){
@@ -114,9 +108,8 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
             TS: new Date(Date.now()).toISOString()
           });
           tripstore.setCurrentSourceData(currentLayerSourceData);
-          AppUtils.updateLayer(thisMap, tripstore.currentLayer);
           thisMap.panTo(event.lngLat);
-  
+          return tripstore.currentLayer;
           } else{
   
           const newLayerId = Math.random().toString(36).substring(7);
@@ -145,12 +138,12 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
             };
           
           tripstore.updateTrip(newLayerTrip);
-          tripstore.setCurrentLayer({trip:newTripId, layer:newLayerId})
-          AppUtils.updateLayer(thisMap, {trip:newTripId, layer:newLayerId});
+          tripstore.setCurrentLayer({trip:newTripId, layer:newLayerId});
           tripstore.setSidebar(true);
           thisMap.flyTo({center: event.lngLat});
-          }
-          return;
+          
+          return {trip:newTripId, layer:newLayerId};
+        }
         }
         AppUtils.handleNormalMapClick(thisMap);
   }
@@ -197,26 +190,35 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
     }
 }
 
-public static updateLayer(thisMap:mapboxgl.Map, toUpdate:{trip:string, layer:string}){
-    const source = thisMap.getSource(toUpdate.layer);
-    const trip = tripstore.payload[toUpdate.trip];
-    console.log(source, trip);
 
-    let updatedLayer;
-    trip.LAYERS.forEach(dbLayer => {
-        if (dbLayer.ID ===toUpdate.layer){
-            updatedLayer= apiService.dbToLayer(dbLayer);
-            if (source){
-                // @ts-ignore
-                source.setData(updatedLayer.source.data);
-            } else{
-                // @ts-ignore
-                thisMap.addSource(updatedLayer.layer.id, updatedLayer.source);
-                thisMap.addLayer(updatedLayer.layer);
-            }
-            return;
-        }
-    });
+public static dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
+    return ({layer:{
+        id: dbLayer.ID,  
+        type: "line",
+        layout: {
+            "line-cap": "round",
+          "line-join": "round"
+          },
+        paint: {
+            'line-color': '#33C9EB',
+            "line-width": 8
+          },
+        source:dbLayer.ID+'source'
+        },
+        source:{
+          data: {
+            features: [{
+            geometry: {
+              coordinates: (dbLayer.POINTS.map((el:LayerPoint)=> [el.LAT, el.LONG]) as [[number, number]]),
+              type: 'LineString',
+              },
+            type: "Feature",
+            }],
+            type: "FeatureCollection",
+          },
+          type: "geojson"
+          }
+        });
 }
 
 }
