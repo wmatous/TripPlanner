@@ -4,21 +4,25 @@ import * as ReactDOM from 'react-dom';
 import Map from './App';
 import './index.css';
 import Overlay from './Overlay.js';
+import { apiService } from './APIService';
 
 dotenv.config();
 
 if(window.location.pathname ==='/postlogin'){
-    let param='';
     try{
         const hash = window.location.hash.split('&')[0];
-        param += '?access_token='+hash.substring(hash.indexOf('=')+1);
+        apiService.accessToken =hash.substring(hash.indexOf('=')+1);
+        console.log(apiService.accessToken);
     } catch (e){
         console.error('There was a problem logging in');
     } finally {
-        window.location.replace('/'+param);
+        if (history.pushState) {
+            window.history.pushState({path:window.location.origin},'',window.location.origin);
+        }
     }
-}else {
-    ReactDOM.render(<Map />, document.getElementById('map'));
-    ReactDOM.render(<Overlay   />, document.getElementById('overlay-wrapper'));
 }
+
+ReactDOM.render(<Map />, document.getElementById('map'));
+ReactDOM.render(<Overlay />, document.getElementById('overlay-wrapper'));
+
 

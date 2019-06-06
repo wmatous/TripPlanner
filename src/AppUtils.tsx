@@ -9,12 +9,11 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
       e.stopPropagation();
       e.preventDefault();
       e.dataTransfer.dropEffect = 'copy';
-      const dt = e.dataTransfer;
-      const files = dt.files;
+      const file = e.dataTransfer.files[0];
       const reader = new FileReader();
-      reader.onload =(theFile:any)=>{
+      reader.onload = (event:any)=>{
         const oParser = new DOMParser();
-        const oDOM = oParser.parseFromString(theFile.target.result, "application/xml");
+        const oDOM = oParser.parseFromString(event.target.result, "application/xml");
         const trkpts = oDOM.getElementsByTagName('trkpt');
         const points:LayerPoint[] = [];
         for(const field of Object.keys(trkpts)){
@@ -40,30 +39,34 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
               TS:time
             });
         }
-
-        const tripId =  Math.random().toString(36).substring(7);
-        const layerId = tripId +  Math.random().toString(36).substring(7);
+        if (!points.length){
+            return;
+        }
+        const layerId = Math.random().toString(36).substring(7);
         const newLayer = {
           ID:layerId,
           COLOUR: '33C9EB',
           POINTS: points
         };
-
+        const tripId =  Math.random().toString(36).substring(7);
           const markerList:MarkerSource[] = [];
           const layerList:DBLayer[] = [newLayer];
           const newTrip = {
             ID: tripId,
-            TITLE:'test',
-            DESCRIPTION:'test',
+            TITLE:file.name,
+            DESCRIPTION:'Dropped file',
             LAYERS: layerList,
             MARKERS: markerList
           };
           tripstore.updateTrip(newTrip);
           tripstore.setCurrentLayer({trip:tripId, layer:layerId});
+          AppUtils.updateLayer(thisMap, {trip:tripId, layer:layerId});
+          tripstore.setSidebar(true);
+          thisMap.flyTo({center:[points[0].LONG, points[0].LAT]});
       };
-      reader.readAsText(files[0]);
+      reader.readAsText(file);
     }
-    // @ts-ignore
+    
     public static handleMapClick(event:any, thisMap: mapboxgl.Map) {
 
         if (tripstore.editMode.editMarker){
@@ -109,7 +112,7 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
           });
           tripstore.setCurrentSourceData(currentLayerSourceData);
           thisMap.panTo(event.lngLat);
-          return tripstore.currentLayer;
+          AppUtils.updateLayer(thisMap, tripstore.currentLayer);
           } else{
   
           const newLayerId = Math.random().toString(36).substring(7);
@@ -141,8 +144,8 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
           tripstore.setCurrentLayer({trip:newTripId, layer:newLayerId});
           tripstore.setSidebar(true);
           thisMap.flyTo({center: event.lngLat});
-          
-          return {trip:newTripId, layer:newLayerId};
+          AppUtils.updateLayer(thisMap, {trip:newTripId, layer:newLayerId});
+          return 
         }
         }
         AppUtils.handleNormalMapClick(thisMap);
@@ -199,8 +202,6 @@ public static updateLayer(thisMap:mapboxgl.Map, toUpdate:{trip:string, layer:str
     trip.LAYERS.forEach(dbLayer => {
         if (dbLayer.ID ===toUpdate.layer){
             updatedLayer = AppUtils.dbToLayer(dbLayer);
-            console.log(updatedLayer);
-            console.log(source);
             if (source){
                 // @ts-ignore
                 source.setData(updatedLayer.source.data);
@@ -225,7 +226,7 @@ public static dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
           },
         paint: {
             'line-color': ['get', 'color'],
-            "line-width": 8
+            "line-width": ['get', 'width']
           },
         source:dbLayer.ID+'source'
         },
@@ -233,10 +234,10 @@ public static dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
           data: {
             features: [{
             geometry: {
-              coordinates: (dbLayer.POINTS.map((el:LayerPoint)=> [el.LAT, el.LONG]) as [[number, number]]),
+              coordinates: (dbLayer.POINTS.map((el:LayerPoint)=> [el.LONG, el.LAT]) as [[number, number]]),
               type: 'LineString',
               },
-            properties: {'color': '#33C9EB'},
+            properties: {'color': '#33C9EB', 'width': 8},
             type: "Feature",
             }],
             type: "FeatureCollection",
@@ -245,9 +246,4 @@ public static dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
           }
         });
 }
-
-public static dbToLayerData(points:LayerPoint[]):Array<[number, number]>{
-    return points.map((el:LayerPoint)=> [el.LAT, el.LONG]) as Array<[number, number]>;
-}
-
 }

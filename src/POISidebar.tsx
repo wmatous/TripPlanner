@@ -33,6 +33,9 @@ export default class POISidebar extends React.Component<{}, {}>
       tripstore.setTripProperty(elementID, event.target.value); 
     }
    }
+  public saveTrip() {
+    tripstore.saveActiveTrip();
+  }
 
    public render(){
      const tripToRender = tripstore.payload[tripstore.currentTripId];
@@ -59,6 +62,7 @@ export default class POISidebar extends React.Component<{}, {}>
                     onChange={this.handleChange}
                     />
           </div>
+          <button onClick={this.saveTrip} >Save</button>
         </div>
       </Modal>
       );

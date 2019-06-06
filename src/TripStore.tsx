@@ -234,6 +234,10 @@ export interface Layer {
     public clearPayload(){
       this.payload = {};
     }
+
+    public saveActiveTrip(){
+      apiService.saveTrip(this.payload[this.currentTripId]);
+    }
    
 }
   export const tripstore = new TripStore();

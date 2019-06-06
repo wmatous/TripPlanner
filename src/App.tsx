@@ -67,11 +67,7 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ }> {
     });
   
     thisMap.on('click', (event:any) =>{
-      const activeLayer = AppUtils.handleMapClick(event, thisMap);
-      if (activeLayer){
-
-        AppUtils.updateLayer(thisMap, activeLayer);
-      }
+      AppUtils.handleMapClick(event, thisMap);
     });   
   
   }
