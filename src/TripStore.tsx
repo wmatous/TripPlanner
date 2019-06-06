@@ -4,28 +4,34 @@ import {apiService} from './APIService';
 
 // tslint:disable-next-line:interface-name
 export interface Trip {
-    active?: boolean;
-    url?: URL;
-    id: string;
-    latitude?: number;
-    longitude?: number;
-    title?: string;
-    duration?: string;
-    distance?: string;
-    description?: string;
-    forecasts?:[URL];
-    attributes?: [URL];
-    markers?:{[key:string]:MarkerSource};
-    layers?:{[key:string]: {source:LayerSource, layer:Layer}};
+    ID:string,
+    TITLE:string,
+    DESCRIPTION:string,
+    MARKERS:MarkerSource[];
+    LAYERS:DBLayer[];
   }
 
 export interface MarkerSource {
-  className:string,
-  element:string,
-  markerId:string,
-  long:number,
-  lat:number,
-  ts: string
+  CLS:string,
+  EL:string,
+  LAT:number,
+  LONG:number,
+  ID:string,
+  ALT:number,
+  TS:string
+}
+
+export interface DBLayer {
+  ID:string,
+  COLOUR:string,
+  POINTS:LayerPoint[]
+}
+
+export interface LayerPoint {
+  LAT:number,
+  LONG:number,
+  ALT:number,
+  TS:string
 }
 
 export interface Layer {
@@ -33,29 +39,27 @@ export interface Layer {
   type: string,
   layout: {[key:string]: string},
   paint: {[key:string]: any},
-  source? :string
+  source :{
+    data: {
+      features: [{
+      geometry: {
+        coordinates: Array<[
+          number,
+          number
+        ]>
+      ,
+        type: string,
+        },
+      properties: {[key:string]: string},
+      type: string,
+      }],
+      type: string,
+    },
+    id:string,
+    type: string,
+    }
   };
 
-interface LayerData {
-  features: [{
-  geometry: {
-    coordinates: [[
-      number,
-      number
-    ]
-  ],
-    type: string,
-    },
-  properties: {[key:string]: string},
-  type: string,
-  }],
-  type: string,
-}
-export interface LayerSource {
-  data: LayerData,
-  id: string,
-  type: string,
-  };
 
   export default class TripStore {
     @observable
@@ -65,7 +69,7 @@ export interface LayerSource {
     public currentTripId: string ='';
 
     @observable
-    public currentLayer :{trip:string, layer:string, source:string} | null = null;
+    public currentLayer :{trip:string, layer:string} | null = null;
 
 
     @observable
@@ -79,17 +83,27 @@ export interface LayerSource {
         editPath:false
       };
 
-    @computed get currentLayerSource():string {
+    /* @computed get currentLayerSource():string {
       try{
-        return this.payload[this.currentLayer!.trip].layers![this.currentLayer!.layer].layer.source!;
+         this.payload[this.currentLayer!.trip].LAYERS.forEach(element => {
+           
+         });![this.currentLayer!.layer].layer.source!;
       } catch(e){
         return '';
       }
     }
+    */
+    
 
-    @computed get currentLayerSourceData():LayerData | null{
+    @computed get currentLayerSourceData():LayerPoint[] | null {
       try{
-        return this.payload[this.currentLayer!.trip].layers![this.currentLayer!.layer].source.data!;
+        let data = null;
+        this.payload[this.currentLayer!.trip].LAYERS.forEach((layer:DBLayer) =>{
+          if (layer.ID === this.currentLayer!.layer){
+            data = layer.POINTS;
+          }
+        });
+         return data;
       } catch(e){
         return null;
       }
@@ -104,7 +118,7 @@ export interface LayerSource {
     }
 
     @action
-    public setCurrentLayer(newLayer:{trip:string, layer:string, source:string} | null){
+    public setCurrentLayer(newLayer:{trip:string, layer:string} | null){
       if(newLayer){
         this.currentTripId = newLayer.trip;
       }
@@ -112,9 +126,13 @@ export interface LayerSource {
     }
 
     @action
-    public setCurrentSourceData(data:LayerData){
+    public setCurrentSourceData(data:LayerPoint[]){
       try{
-      this.payload[this.currentLayer!.trip].layers![this.currentLayer!.layer].source.data = data;
+        this.payload[this.currentLayer!.trip].LAYERS.forEach((layer:DBLayer) =>{
+          if (layer.ID === this.currentLayer!.layer){
+            layer.POINTS = data;
+          }
+        });
       } catch(e){
         console.error(e);
         console.error('problem updating source data');
@@ -130,9 +148,7 @@ export interface LayerSource {
       response.json())
     .then((data) => {
       console.log(data);
-      data.forEach((element:{[key:string]:any}) =>
-        this.payload[element.id] = apiService.dbToTrip(element)
-      );
+      this.payload = data;
       return data;})
     .catch(error => console.error(`Fetch Error =\n`, error));
       } catch (err){
@@ -160,9 +176,7 @@ export interface LayerSource {
 
     @action
     public setTripProperty(property:string, newVal:any){
-      if (property === 'active'){
-        newVal = newVal === 'true' ? true : false;
-      } else if (property === 'latitude' || property === 'longitude' ){
+      if (property === 'LAT' || property === 'LONG' ){
         newVal = Number(newVal);
       }
       this.payload[this.currentTripId][property] = newVal;
@@ -206,9 +220,9 @@ export interface LayerSource {
 
     @action
     public updateTrip(newTrip:Trip){
-      const existingTrip = this.payload[newTrip.id];
-      this.payload[newTrip.id] = newTrip;
-      this.setActiveTrip(newTrip.id);
+      const existingTrip = this.payload[newTrip.ID];
+      this.payload[newTrip.ID] = newTrip;
+      this.setActiveTrip(newTrip.ID);
       return existingTrip;
     }
     @action
