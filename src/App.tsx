@@ -21,8 +21,6 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ }> {
     this.addMarkers(thisMap, tripstore.payload);
   }
 
-
-// using thisMap: Map causes issue with last line
   public addMarkers(thisMap:mapboxgl.Map, data:{[key:string]:Trip}){
     // add markers to map
     for(const key of Object.keys(data)){

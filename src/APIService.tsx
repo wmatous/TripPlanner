@@ -1,4 +1,4 @@
-import {MarkerSource, Layer, DBLayer, LayerPoint} from './TripStore'
+import {DBLayer, LayerPoint} from './TripStore'
 export default class APIService {
 
     // @ts-ignore
@@ -12,26 +12,9 @@ export default class APIService {
         return fetch('http://localhost:8000/trips/?format=json');
 
     }
-    public dbToTrip(element:{[key:string]:any}){
-        const newTrip = {
-          description: element.DESCRIPTION,
-          id: element.ID,
-          layers: {},
-          markers: {},
-          title: element.TITLE
-        };
-        element.MARKERS.forEach((marker:MarkerSource) => {
-            newTrip.markers[marker.ID] = marker;
-        });
-        element.LAYERS.map((ly:any) => apiService.dbToLayer(ly)).forEach((layer:Layer) => {
-          console.log(layer);
-          newTrip.markers[layer.id] = layer;
-      });
-        return newTrip; 
-    }
   
-    public dbToLayer(dbLayer:DBLayer):Layer {
-        return ({
+    public dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
+        return ({layer:{
             id: dbLayer.ID,  
             type: "line",
             layout: {
@@ -39,22 +22,22 @@ export default class APIService {
               "line-join": "round"
               },
             paint: {
-                'line-color': ['get', 'color'],
+                'line-color': '#33C9EB',
                 "line-width": 8
               },
-            source :{
+            source:dbLayer.ID
+            },
+            source:{
               data: {
                 features: [{
                 geometry: {
                   coordinates: (dbLayer.POINTS.map((el:LayerPoint)=> [el.LAT, el.LONG]) as [[number, number]]),
                   type: 'LineString',
                   },
-                properties: {'color': '#33C9EB'},
                 type: "Feature",
                 }],
                 type: "FeatureCollection",
               },
-              id: dbLayer.ID,
               type: "geojson"
               }
             });

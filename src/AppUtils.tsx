@@ -3,7 +3,8 @@ import {tripstore, DBLayer, Trip} from './TripStore';
 
 
 
-import { MarkerSource, LayerPoint } from './TripStore';
+import { MarkerSource, LayerPoint} from './TripStore';
+import {apiService} from './APIService';
 
 
 export default class AppUtils {
@@ -113,6 +114,8 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
             TS: new Date(Date.now()).toISOString()
           });
           tripstore.setCurrentSourceData(currentLayerSourceData);
+          AppUtils.updateLayer(thisMap, tripstore.currentLayer);
+          thisMap.panTo(event.lngLat);
   
           } else{
   
@@ -126,12 +129,11 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
                 ALT:0,
                 TS: new Date(Date.now()).toISOString(),
                 LAT: event.lngLat.lat,
-                LONG: event.lngLat.lngLat
+                LONG: event.lngLat.lng
               }],
             COLOUR: "33C9EB",
             ID: newLayerId
           };
-  
           newLayers.push(newLayer);
   
           const newLayerTrip:Trip = {
@@ -144,6 +146,7 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
           
           tripstore.updateTrip(newLayerTrip);
           tripstore.setCurrentLayer({trip:newTripId, layer:newLayerId})
+          AppUtils.updateLayer(thisMap, {trip:newTripId, layer:newLayerId});
           tripstore.setSidebar(true);
           thisMap.flyTo({center: event.lngLat});
           }
@@ -192,6 +195,28 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
       .setLngLat([marker.LONG, marker.LAT])
       .addTo(thisMap);
     }
+}
+
+public static updateLayer(thisMap:mapboxgl.Map, toUpdate:{trip:string, layer:string}){
+    const source = thisMap.getSource(toUpdate.layer);
+    const trip = tripstore.payload[toUpdate.trip];
+    console.log(source, trip);
+
+    let updatedLayer;
+    trip.LAYERS.forEach(dbLayer => {
+        if (dbLayer.ID ===toUpdate.layer){
+            updatedLayer= apiService.dbToLayer(dbLayer);
+            if (source){
+                // @ts-ignore
+                source.setData(updatedLayer.source.data);
+            } else{
+                // @ts-ignore
+                thisMap.addSource(updatedLayer.layer.id, updatedLayer.source);
+                thisMap.addLayer(updatedLayer.layer);
+            }
+            return;
+        }
+    });
 }
 
 }
