@@ -70,34 +70,11 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ }> {
       const activeLayer = AppUtils.handleMapClick(event, thisMap);
       if (activeLayer){
 
-        this.updateLayer(activeLayer);
+        AppUtils.updateLayer(thisMap, activeLayer);
       }
     });   
   
   }
-
-  public updateLayer( toUpdate:{trip:string, layer:string}){
-    const source = this.map.getSource(toUpdate.layer+'source');
-    const trip = tripstore.payload[toUpdate.trip];
-
-    let updatedLayer;
-    trip.LAYERS.forEach(dbLayer => {
-        if (dbLayer.ID ===toUpdate.layer){
-            updatedLayer = AppUtils.dbToLayer(dbLayer);
-            console.log(updatedLayer);
-            console.log(source);
-            if (source){
-                // @ts-ignore
-                source.setData(updatedLayer.source.data);
-            } else{
-                // @ts-ignore
-                this.map.addSource(updatedLayer.layer.id+'source', updatedLayer.source);
-                this.map.addLayer(updatedLayer.layer);
-            }
-            return;
-        }
-    });
-}
 
   public componentWillUnmount() {
     this.map.remove();

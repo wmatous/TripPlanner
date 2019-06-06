@@ -191,6 +191,30 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
 }
 
 
+public static updateLayer(thisMap:mapboxgl.Map, toUpdate:{trip:string, layer:string}){
+    const source = thisMap.getSource(toUpdate.layer+'source');
+    const trip = tripstore.payload[toUpdate.trip];
+
+    let updatedLayer;
+    trip.LAYERS.forEach(dbLayer => {
+        if (dbLayer.ID ===toUpdate.layer){
+            updatedLayer = AppUtils.dbToLayer(dbLayer);
+            console.log(updatedLayer);
+            console.log(source);
+            if (source){
+                // @ts-ignore
+                source.setData(updatedLayer.source.data);
+            } else{
+                // @ts-ignore
+                thisMap.addSource(updatedLayer.layer.id+'source', updatedLayer.source);
+                thisMap.addLayer(updatedLayer.layer);
+            }
+            return;
+        }
+    });
+}
+
+
 public static dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
     return ({layer:{
         id: dbLayer.ID,  
@@ -200,7 +224,7 @@ public static dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
           "line-join": "round"
           },
         paint: {
-            'line-color': '#33C9EB',
+            'line-color': ['get', 'color'],
             "line-width": 8
           },
         source:dbLayer.ID+'source'
@@ -212,6 +236,7 @@ public static dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
               coordinates: (dbLayer.POINTS.map((el:LayerPoint)=> [el.LAT, el.LONG]) as [[number, number]]),
               type: 'LineString',
               },
+            properties: {'color': '#33C9EB'},
             type: "Feature",
             }],
             type: "FeatureCollection",
@@ -219,6 +244,10 @@ public static dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
           type: "geojson"
           }
         });
+}
+
+public static dbToLayerData(points:LayerPoint[]):Array<[number, number]>{
+    return points.map((el:LayerPoint)=> [el.LAT, el.LONG]) as Array<[number, number]>;
 }
 
 }
