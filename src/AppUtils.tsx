@@ -215,6 +215,25 @@ public static updateLayer(thisMap:mapboxgl.Map, toUpdate:{trip:string, layer:str
     });
 }
 
+public static addLayer(thisMap:mapboxgl.Map, dbLayer : DBLayer){
+    const updatedLayer = AppUtils.dbToLayer(dbLayer);
+    // @ts-ignore
+    thisMap.addSource(updatedLayer.layer.id+'source', updatedLayer.source);
+    thisMap.addLayer(updatedLayer.layer);
+}
+
+
+
+public static populateMap(thisMap:mapboxgl.Map, data:{[key:string]:Trip}){
+    for(const key of Object.keys(data)){
+        const tripEntry = data[key];
+        tripEntry.MARKERS.forEach(e => AppUtils.addMarker(thisMap, e, key));
+        tripEntry.LAYERS.forEach(e => AppUtils.addLayer(thisMap, e));
+      }
+}
+
+
+
 
 public static dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
     return ({layer:{

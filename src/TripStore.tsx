@@ -143,17 +143,17 @@ export interface Layer {
     @action
     public fetchData(){
       try{
-    return apiService.fetchTrips()
-    .then((response) => 
-      response.json())
-    .then((data) => {
-      console.log(data);
-      this.payload = data;
-      return data;})
-    .catch(error => console.error(`Fetch Error =\n`, error));
-      } catch (err){
-        console.error(err);
-      }
+        return apiService.fetchTrips()
+              .then((response) => 
+                response.json())
+              .then((data) => {
+                this.payload = data;
+                return data;
+              })
+            .catch(error => console.error(`Fetch Error =\n`, error));
+            } catch (err){
+              console.error(err);
+          }
       return new Promise((reject) => reject());
     }
 
@@ -196,27 +196,6 @@ export interface Layer {
     public URLMap(input: string){
       return new URL(input);
     } 
-
-    public submitTrip(id:string){
-      // const tripToSubmit = this.payload[id];
-      fetch("/trips",
-      {
-        body : JSON.stringify({
-          description: 'brisk hike',
-          distance: '25.1',
-          duration: '10:30:00',
-          id : 'testId',
-          latitude: 49.975046,
-          longitude: -123.043000,
-          title: 'Black Tusk',
-          
-           }),
-        method : "POST"
-          
-      })
-      .then((res:any) =>  res.json() )
-      .then((data:any) => { alert( JSON.stringify( data ) ) })
-    }
 
     @action
     public updateTrip(newTrip:Trip){

@@ -13,6 +13,8 @@ export default class APIService {
     }
 
     public saveTrip(trip:Trip){
+        trip.LAYERS.forEach((el)=>delete el.ID);
+        trip.MARKERS.forEach((el)=>delete el.ID);
         if (!this.accessToken){
             console.error('no access token');
         }

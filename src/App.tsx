@@ -2,7 +2,7 @@ import * as mapboxgl  from 'mapbox-gl';
 import * as React from 'react';
 import './App.css';
 import AppUtils from './AppUtils'
-import {tripstore, Trip} from './TripStore'
+import {tripstore} from './TripStore'
 
   if(process.env.REACT_APP_MAPBOX_KEY){
     (mapboxgl as typeof mapboxgl).accessToken =  process.env.REACT_APP_MAPBOX_KEY;
@@ -17,24 +17,6 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ }> {
   private mapContainer: any;
   
 
-  public populateMap(thisMap:mapboxgl.Map){
-    this.addMarkers(thisMap, tripstore.payload);
-  }
-
-  public addMarkers(thisMap:mapboxgl.Map, data:{[key:string]:Trip}){
-    // add markers to map
-    for(const key of Object.keys(data)){
-      const markerObject = data[key].MARKERS;
-      if (markerObject){
-        Object.keys(markerObject).forEach(e => AppUtils.addMarker(thisMap, markerObject[e], key));
-      }
-    }
-  }
-
-
-
-  
-
   public componentDidMount() {
     
     this.map = new mapboxgl.Map({
@@ -44,9 +26,10 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ }> {
       zoom: 9
     });
 
-    tripstore.fetchData().then(()=>{
-      this.populateMap(this.map);
-    }).catch((err)=>{
+    tripstore.fetchData()
+      .then((data)=>{
+        AppUtils.populateMap(this.map, data);
+      }).catch((err)=>{
       console.error(err);
     });
 
