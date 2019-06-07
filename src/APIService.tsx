@@ -9,7 +9,7 @@ export default class APIService {
     }    
     
     public fetchTrips(){
-        return fetch('http://localhost:8000/trips/?format=json');
+        return fetch(process.env.REACT_APP_API_BASE+'/trips/?format=json');
     }
 
     public saveTrip(trip:Trip){
@@ -18,7 +18,7 @@ export default class APIService {
         if (!this.accessToken){
             console.error('no access token');
         }
-        fetch("http://localhost:8000/trips/",
+        fetch(process.env.REACT_APP_API_BASE+'/trips/',
         {
             headers: {
             'Content-Type': 'application/json',
