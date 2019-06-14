@@ -1,6 +1,6 @@
 ## Trip Planner / Project Beta
 
-https://coolors.co/000000-ffffff-ef6461-e4b363-e8e9eb
+https://coolors.co/000000-ffffff-fe5f55-26c485-f0b67f
 
 
 
