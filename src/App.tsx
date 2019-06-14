@@ -1,7 +1,7 @@
 import * as mapboxgl  from 'mapbox-gl';
 import * as React from 'react';
 import './App.css';
-import AppUtils from './AppUtils'
+import {AppUtilsInstance} from './AppUtils'
 import {tripstore} from './TripStore'
 
   if(process.env.REACT_APP_MAPBOX_KEY){
@@ -25,15 +25,22 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ }> {
       style: 'mapbox://styles/mapbox/satellite-v9',
       zoom: 9
     });
+    const thisMap = this.map;
+
+    AppUtilsInstance.setMapInstance(thisMap);
 
     tripstore.fetchData()
       .then((data)=>{
-        AppUtils.populateMap(this.map, data);
+        AppUtilsInstance.populateMap(data);
       }).catch((err)=>{
       console.error(err);
     });
 
-    const thisMap = this.map;
+    /*
+    reaction(() => tripstore.currentTripId,
+    (data, rxn) => {AppUtils.refreshMarkers(thisMap);}
+    );
+    */
 
     this.mapContainer.addEventListener('dragover', (e:any)=>{
       e = e || event;
@@ -41,7 +48,7 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ }> {
     });
 
     this.mapContainer.addEventListener('drop', (e:any)=>{
-      AppUtils.handleFileDrop(e, thisMap);
+      AppUtilsInstance.handleFileDrop(e);
     }); 
 
     window.addEventListener('drop', (e:any)=> {
@@ -50,7 +57,7 @@ export default class Map extends React.Component<{/* props */}, {/* state*/ }> {
     });
   
     thisMap.on('click', (event:any) =>{
-      AppUtils.handleMapClick(event, thisMap);
+      AppUtilsInstance.handleMapClick(event);
     });   
   
   }

@@ -18,17 +18,47 @@ export default class APIService {
         if (!this.accessToken){
             console.error('no access token');
         }
-        fetch(process.env.REACT_APP_API_BASE+'/trips/',
+        if (trip.ID.length < 8){
+            return fetch(process.env.REACT_APP_API_BASE+'/trips/',
+            {
+                headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer google-oauth2 '+this.accessToken
+                },
+                method: 'POST',
+                body: JSON.stringify(trip)
+            })
+            .then(res => res.json())
+            .catch((res)=> console.error(res));
+        } else {
+            return fetch(process.env.REACT_APP_API_BASE+'/trips/'+trip.ID+'/',
+            {
+                headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer google-oauth2 '+this.accessToken
+                },
+                method: "PUT",
+                body: JSON.stringify(trip)
+            })
+            .then(res => res.json())
+            .catch((res)=> console.error(res));
+        }
+    }
+
+    public deleteTrip(trip:Trip){
+        if (!this.accessToken){
+            console.error('no access token');
+        }
+        return fetch(process.env.REACT_APP_API_BASE+'/trips/'+trip.ID+'/',
         {
             headers: {
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer google-oauth2 '+this.accessToken
             },
-            method: "POST",
-            body: JSON.stringify(trip)
+            method: "DELETE",
         })
-        .then((res)=> console.log(res))
-        .catch((res)=> console.log(res));
+        .catch((res)=> {
+            return res;
+        });
     }
   
 }

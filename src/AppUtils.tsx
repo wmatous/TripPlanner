@@ -2,9 +2,14 @@ import * as mapboxgl  from 'mapbox-gl';
 import {tripstore, DBLayer, Trip, MarkerSource, LayerPoint} from './TripStore';
 
 export default class AppUtils {
+    private mapInstance:mapboxgl.Map;
+
+    public setMapInstance(instance:mapboxgl.Map){
+        this.mapInstance = instance;
+    }
 
 
-public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
+public  handleFileDrop(e:any){
       e = e || event;
       e.stopPropagation();
       e.preventDefault();
@@ -60,14 +65,14 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
           };
           tripstore.updateTrip(newTrip);
           tripstore.setCurrentLayer({trip:tripId, layer:layerId});
-          AppUtils.updateLayer(thisMap, {trip:tripId, layer:layerId});
+          this.updateLayer({trip:tripId, layer:layerId});
           tripstore.setSidebar(true);
-          thisMap.flyTo({center:[points[0].LONG, points[0].LAT]});
+          this.mapInstance.flyTo({center:[points[0].LONG, points[0].LAT]});
       };
       reader.readAsText(file);
     }
     
-    public static handleMapClick(event:any, thisMap: mapboxgl.Map) {
+    public  handleMapClick(event:any) {
 
         if (tripstore.editMode.editMarker){
           const newMarkerId = Math.random().toString(36).substring(7);
@@ -91,10 +96,10 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
             LAYERS: layers,
             };
           tripstore.setEditMode('editMarker', false);
-          this.addMarker(thisMap, newMarker, newTrip.ID);
+          this.addMarker(newMarker, newTrip.ID);
           tripstore.updateTrip(newTrip);
           tripstore.setSidebar(true);
-          thisMap.flyTo({center: event.lngLat});
+          this.mapInstance.flyTo({center: event.lngLat});
           return;
         }
         else if (tripstore.editMode.editPath){
@@ -111,8 +116,8 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
             TS: new Date(Date.now()).toISOString()
           });
           tripstore.setCurrentSourceData(currentLayerSourceData);
-          thisMap.panTo(event.lngLat);
-          AppUtils.updateLayer(thisMap, tripstore.currentLayer);
+          this.mapInstance.panTo(event.lngLat);
+          this.updateLayer(tripstore.currentLayer);
           } else{
   
           const newLayerId = Math.random().toString(36).substring(7);
@@ -143,15 +148,15 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
           tripstore.updateTrip(newLayerTrip);
           tripstore.setCurrentLayer({trip:newTripId, layer:newLayerId});
           tripstore.setSidebar(true);
-          thisMap.flyTo({center: event.lngLat});
-          AppUtils.updateLayer(thisMap, {trip:newTripId, layer:newLayerId});
+          this.mapInstance.flyTo({center: event.lngLat});
+          this.updateLayer({trip:newTripId, layer:newLayerId});
           return 
         }
         }
-        AppUtils.handleNormalMapClick(thisMap);
+        this.handleNormalMapClick();
   }
 
-  public static handleNormalMapClick (thisMap: mapboxgl.Map) {
+  public  handleNormalMapClick () {
     let targ;
       let e;
       if (!e && window.event){ 
@@ -167,7 +172,7 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
             targ = targ.parentNode;
           }
 
-        if (targ === thisMap.getCanvas()){
+        if (targ === this.mapInstance.getCanvas()){
           tripstore.setSidebar(false);
       
         }
@@ -175,67 +180,77 @@ public static handleFileDrop(e:any, thisMap: mapboxgl.Map){
     }}
   }
 
-  public static addMarker(thisMap:mapboxgl.Map, marker : MarkerSource, key:string){
+  public  addMarker(marker : MarkerSource, key:string){
     // make a marker for each feature and add to the map
     if (marker.LAT && marker.LONG){
       const el = document.createElement(marker.EL || 'div');
-        el.className = (marker.CLS || 'marker');
+        el.className = (marker.CLS + ' marker ' + 'marker-'+key);
         el.addEventListener('click',  ()=> {
             tripstore.setActiveTrip(key);
             tripstore.setSidebar(true);
-            thisMap.flyTo({center:new mapboxgl.LngLat(marker.LONG,marker.LAT)
+            this.mapInstance.flyTo({center:new mapboxgl.LngLat(marker.LONG,marker.LAT)
             });
           });
               
       new mapboxgl.Marker(el)
       .setLngLat([marker.LONG, marker.LAT])
-      .addTo(thisMap);
+      .addTo(this.mapInstance);
     }
 }
 
 
-public static updateLayer(thisMap:mapboxgl.Map, toUpdate:{trip:string, layer:string}){
-    const source = thisMap.getSource(toUpdate.layer+'source');
+public  updateLayer(toUpdate:{trip:string, layer:string}){
+    const source = this.mapInstance.getSource(toUpdate.layer+'source');
     const trip = tripstore.payload[toUpdate.trip];
 
     let updatedLayer;
     trip.LAYERS.forEach(dbLayer => {
         if (dbLayer.ID ===toUpdate.layer){
-            updatedLayer = AppUtils.dbToLayer(dbLayer);
+            updatedLayer = this.dbToLayer(dbLayer);
             if (source){
                 // @ts-ignore
                 source.setData(updatedLayer.source.data);
             } else{
                 // @ts-ignore
-                thisMap.addSource(updatedLayer.layer.id+'source', updatedLayer.source);
-                thisMap.addLayer(updatedLayer.layer);
+                this.mapInstance.addSource(updatedLayer.layer.id+'source', updatedLayer.source);
+                this.mapInstance.addLayer(updatedLayer.layer);
             }
             return;
         }
     });
 }
 
-public static addLayer(thisMap:mapboxgl.Map, dbLayer : DBLayer){
-    const updatedLayer = AppUtils.dbToLayer(dbLayer);
+public  addLayer(dbLayer : DBLayer){
+    const updatedLayer = this.dbToLayer(dbLayer);
     // @ts-ignore
-    thisMap.addSource(updatedLayer.layer.id+'source', updatedLayer.source);
-    thisMap.addLayer(updatedLayer.layer);
+    this.mapInstance.addSource(updatedLayer.layer.id+'source', updatedLayer.source);
+    this.mapInstance.addLayer(updatedLayer.layer);
 }
 
 
 
-public static populateMap(thisMap:mapboxgl.Map, data:{[key:string]:Trip}){
+public  populateMap(data:{[key:string]:Trip}){
     for(const key of Object.keys(data)){
         const tripEntry = data[key];
-        tripEntry.MARKERS.forEach(e => AppUtils.addMarker(thisMap, e, key));
-        tripEntry.LAYERS.forEach(e => AppUtils.addLayer(thisMap, e));
+        tripEntry.MARKERS.forEach(e => this.addMarker( e, key));
+        tripEntry.LAYERS.forEach(e => this.addLayer( e));
       }
 }
 
+public removeMarkers(key:string){
+    const markerList = document.getElementsByClassName('marker-'+key);
+    /* tslint:disable */  
+    for (let i=0; i< markerList.length; i++){
+        markerList[i].remove();
+    }
+    /* tslint:enable */
+}
 
+public listMarkers(){
+    console.log(document.getElementsByClassName('marker'));
+}
 
-
-public static dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
+public  dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
     return ({layer:{
         id: dbLayer.ID,  
         type: "line",
@@ -266,3 +281,4 @@ public static dbToLayer(dbLayer:DBLayer):{[key:string]:any} {
         });
 }
 }
+export const AppUtilsInstance = new AppUtils();

@@ -1,3 +1,7 @@
 .overlayContainer {
     position: relative;
 }
+.userIcon{
+    width: 50px;
+    border-radius: 25px;
+}

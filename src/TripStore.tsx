@@ -1,5 +1,6 @@
 import { action, computed, observable } from "mobx";
 import {apiService} from './APIService';
+import {AppUtilsInstance} from './AppUtils';
 
 
 // tslint:disable-next-line:interface-name
@@ -214,9 +215,39 @@ export interface Layer {
       this.payload = {};
     }
 
+    @action
     public saveActiveTrip(){
-      apiService.saveTrip(this.payload[this.currentTripId]);
+      apiService.saveTrip(this.payload[this.currentTripId])
+      .then(data=> {
+        if (data && data.ID){
+          if (data.ID !== this.currentTripId){
+          delete this.payload[this.currentTripId];
+          AppUtilsInstance.removeMarkers(this.currentTripId);
+          this.currentTripId = data.ID;
+          data.MARKERS.forEach((e:any) => AppUtilsInstance.addMarker( e, data.ID));
+          }
+          this.payload[this.currentTripId]=data;
+        } else {
+          alert('There was a problem saving the trip, ensure you are logged in and try again');
+        }
+      })
     }
+
+    @action
+    public deleteActiveTrip(){
+      apiService.deleteTrip(this.payload[this.currentTripId]).then(res=>{
+        if (res.status === 204){
+          AppUtilsInstance.removeMarkers(this.currentTripId);
+          delete this.payload[this.currentTripId];
+          this.currentTripId ='';
+          this.setSidebar(false);
+        } else {
+          alert('There was a problem deleting the trip, ensure you are logged in and try again');
+        }
+      });
+    }
+
+    
    
 }
   export const tripstore = new TripStore();

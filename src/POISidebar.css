@@ -1,7 +1,18 @@
-input {
+textarea {
     border: 0;
     outline: 0;
     background: transparent;
+    resize: none;
+}
+
+#trip-title {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 32px;
+  color: black;
+  margin: 5px;
+  /* -webkit-margin-before:0em;
+  -webkit-margin-after:0em; */
+
 }
 
 /**
@@ -12,10 +23,11 @@ input {
     bottom: 0;
     left: 0;
     top: 10vh;
+    width: 30vw;
     background: rgba(255, 255, 255, 0.8);
     margin-left: 3vh;
     font-family: Arial, sans-serif;
-    overflow: auto;
+    overflow-x: hidden;
     border-radius: 5px;
     visibility: hidden;
   }
@@ -41,11 +53,9 @@ input {
     top: 0;
     height: 84vh;
     margin: 3vh;
-    width: 30vw;
   }
   
   .poi-inner {
     position: relative;
-    margin-left: 5%;
-    width: 30vw;
+    margin: 5%;
   }
