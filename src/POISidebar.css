@@ -3,10 +3,12 @@ textarea {
     outline: 0;
     background: transparent;
     resize: none;
+    width:90%;
+    font-family: 'Source Sans Pro', sans-serif;
 }
 
 #trip-title {
-  font-family: 'Source Sans Pro', sans-serif;
+  
   font-size: 32px;
   color: black;
   margin: 5px;
@@ -22,13 +24,10 @@ textarea {
 .poi-overlay {
     bottom: 0;
     left: 0;
-    top: 10vh;
     width: 30vw;
-    background: rgba(255, 255, 255, 0.8);
-    margin-left: 3vh;
-    font-family: Arial, sans-serif;
+    background: rgba(255, 255, 255, 0.9);
+    
     overflow-x: hidden;
-    border-radius: 5px;
     visibility: hidden;
   }
   
@@ -50,12 +49,30 @@ textarea {
   #poi-info {
     position: absolute;
     visibility: visible;
-    top: 0;
-    height: 84vh;
-    margin: 3vh;
+    top: 5vh;
+    height: 90vh;
+    border-radius: 0px 10px 10px 0px;
   }
   
   .poi-inner {
     position: relative;
     margin: 5%;
+  }
+
+  .tripActions{
+    bottom: 0;
+    margin: 5%;
+    position: absolute;
+  
+  }
+
+.buttonStyle{
+    font-family: 'Source Sans Pro', sans-serif;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: none;
+    border-radius: 3px;
+    background: none;
+    margin: 5px;
+    font-size: 32px;
   }

@@ -3,7 +3,7 @@ import * as React from 'react';
 import posed from 'react-pose';
 import './POISidebar.css';
 import { tripstore } from './TripStore';
-import { AppUtilsInstance } from './AppUtils';
+import { AppUtilsInstance, cssColors} from './AppUtils';
 
 
 export const Modal = posed.div({
@@ -23,28 +23,9 @@ export const Modal = posed.div({
 @observer
 export default class POISidebar extends React.Component<{}, {}>
 {
-  /*
-  public resizeIt() {
-    const str = $('text-area').value;
-    const cols = $('text-area').cols;
-
-    let linecount = 0;
-    $A(str.split("\n")).each( function(l) {
-        linecount += Math.ceil( l.length / cols ); // Take into account long lines
-    })
-    $('text-area').rows = linecount + 1;
-  };
-
-   You could attach to keyUp, etc. if keydown doesn't work
-  Event.observe('text-area', 'keydown', resizeIt );
-
-  resizeIt(); //Initial on load
-  
-*/
-
   public handleChange = (event: { target: HTMLTextAreaElement })=> {
     const elementID = (event.target as HTMLTextAreaElement).dataset.fieldid;
-    this.calculateRows((event.target as HTMLTextAreaElement));
+    this.calculateRows(event.target as HTMLTextAreaElement);
     if (elementID){
       tripstore.setTripProperty(elementID, event.target.value); 
     }
@@ -55,12 +36,21 @@ export default class POISidebar extends React.Component<{}, {}>
     this.calculateRows(document.getElementById('trip-desc') as HTMLTextAreaElement);
   }
 
+  public componentDidUpdate(){
+    this.calculateRows(document.getElementById('trip-title') as HTMLTextAreaElement);
+    this.calculateRows(document.getElementById('trip-desc') as HTMLTextAreaElement);
+  }
+
   public saveTrip() {
     tripstore.saveActiveTrip();
   }
 
   public deleteTrip() {
     tripstore.deleteActiveTrip();
+  }
+
+  public togglePublic(){
+    tripstore.setTripProperty('PUBLIC', !(tripstore.currentTripData!.PUBLIC));
   }
 
   public listPayload(){
@@ -76,32 +66,49 @@ export default class POISidebar extends React.Component<{}, {}>
      if (!tripToRender){
        return (<div/>);
      }
-    return (
-      <Modal 
-        className='poi-overlay' id='poi-info'>
-        <div className = 'poi-inner' id = 'poi-info-inner'>
-          <div className = 'trip-title'> 
-            <textarea
-                  id = 'trip-title'
-                    data-fieldid ='TITLE' 
-                    value={tripToRender.TITLE}
-                    onChange={this.handleChange}
-                    />
-          </div>
-          <div className = 'trip-desc'> 
-            <textarea 
-                  id = 'trip-desc'
-                    data-fieldid ='DESCRIPTION'
-                    value={tripToRender.DESCRIPTION}
-                    onChange={this.handleChange}
-                    />
-          </div>
-          <button onClick={this.saveTrip} >Save</button>
-          <button onClick={this.deleteTrip} >Delete</button>
-          <button onClick={this.listPayload} > list </button>
+    return (<Modal 
+      className='poi-overlay' id='poi-info'>
+      <div className = 'poi-inner' id = 'poi-info-inner'>
+        <div className = 'trip-title'> 
+          <textarea
+                id = 'trip-title'
+                  data-fieldid ='TITLE' 
+                  value={tripToRender.TITLE}
+                  onChange={this.handleChange}
+                  />
         </div>
-      </Modal>
-      );
+        <div className = 'trip-desc'> 
+          <textarea 
+                id = 'trip-desc'
+                  data-fieldid ='DESCRIPTION'
+                  value={tripToRender.DESCRIPTION}
+                  onChange={this.handleChange}
+                  />
+        </div>
+        </div>
+        <div className = 'tripActions'>
+          <div>
+          <button className= 'buttonStyle' 
+            onClick={this.togglePublic} 
+            style ={{color: tripToRender.PUBLIC? cssColors.pos:'#a0a0a0' } as React.CSSProperties}>
+              {tripToRender.PUBLIC? 'Public' : 'Private'}
+              </button>
+          </div>
+            
+            <button className= 'buttonStyle' 
+            onClick={this.saveTrip} 
+            style ={{background:cssColors.posMute, color:cssColors.pos } as React.CSSProperties}>
+              Save
+              </button>
+            <button className= 'buttonStyle' 
+            onClick={this.deleteTrip} 
+            style ={{background:cssColors.negMute, color: cssColors.neg} as React.CSSProperties} >
+              Delete
+            </button>
+        </div>
+        
+      
+    </Modal>);
 
       
   };
@@ -115,6 +122,7 @@ export default class POISidebar extends React.Component<{}, {}>
     });
     el.rows = linecount;
   }
+
 }
 
 

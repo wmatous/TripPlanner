@@ -8,6 +8,7 @@ export interface Trip {
     ID:string,
     TITLE:string,
     DESCRIPTION:string,
+    PUBLIC:boolean,
     MARKERS:MarkerSource[];
     LAYERS:DBLayer[];
   }
@@ -95,6 +96,9 @@ export interface Layer {
     }
     */
     
+    @computed get currentTripData():Trip | null {
+      return this.payload[this.currentTripId];
+    }
 
     @computed get currentLayerSourceData():LayerPoint[] | null {
       try{
@@ -177,10 +181,9 @@ export interface Layer {
 
     @action
     public setTripProperty(property:string, newVal:any){
-      if (property === 'LAT' || property === 'LONG' ){
-        newVal = Number(newVal);
+      if (this.currentTripData){
+        this.currentTripData[property] = newVal;
       }
-      this.payload[this.currentTripId][property] = newVal;
     }
   
   

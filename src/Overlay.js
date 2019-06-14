@@ -16,19 +16,7 @@ export default observer( class Overlay extends Component {
             +process.env.REACT_APP_CLIENT_ID+'&redirect_uri='
             +process.env.REACT_APP_REDIRECT_URI+'&scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile';
     }
-    constructor(props){
-        super(props);
-        if (apiService.accessToken){
-            fetch('https://www.googleapis.com/plus/v1/people/me?access_token='+apiService.accessToken)
-            .then(res=>res.json())
-            .then(data=> {
-                this.setState({imageUrl : data.image.url});
-            })
-            // tslint:disable-next-line:no-console
-            .catch(res=>console.error(res));
-        }
-        
-    }
+    
 
     setEditMode = (event)=>{
         try{
@@ -83,12 +71,11 @@ export default observer( class Overlay extends Component {
     return (
     <div className = 'overlayContainer'>
         <PoseGroup >
-            
             {!tripstore.activePOISidebar && [
                 <Sidebar key='action'>
                     <ActionSidebar  icons = {this.defaultButtons}>
-                        {this.state && this.state.imageUrl?
-                        <img className ='userIcon' src =  {this.state.imageUrl} />:
+                        {apiService.userDetails && apiService.userDetails.imageUrl?
+                        <img className ='userIcon' src =  {apiService.userDetails.imageUrl} />:
                         <div className = 'pBetaLogo' onClick= {this.handleLogoClick}>
                             β
                         </div>
