@@ -79,6 +79,10 @@ export default class POISidebar extends React.Component<{}, {}>
 
     return (<Modal 
       className='poi-overlay'>
+        <div id='dragWrapper'>
+        <div id='dragHeader'/>
+        </div>
+        
       <div className = 'poi-inner' id = 'poi-info-inner'>
         <div className = 'trip-title'> 
           <textarea
