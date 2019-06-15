@@ -2,8 +2,9 @@ import {observer} from 'mobx-react';
 import * as React from 'react';
 import posed from 'react-pose';
 import './POISidebar.css';
-import { tripstore } from './TripStore';
-import { AppUtilsInstance, cssColors} from './AppUtils';
+import {tripstore} from './TripStore';
+import {AppUtilsInstance, cssColors} from './AppUtils';
+import {apiService} from './APIService';
 
 
 export const Modal = posed.div({
@@ -66,8 +67,18 @@ export default class POISidebar extends React.Component<{}, {}>
      if (!tripToRender){
        return (<div/>);
      }
+     const btnParams = apiService.accessToken? {
+      saveStyle: {background:cssColors.posMute, color:cssColors.pos} as React.CSSProperties,
+      saveAction:this.saveTrip,
+      delStyle: {background:cssColors.negMute, color: cssColors.neg} as React.CSSProperties,
+      delAction: this.deleteTrip
+     }:{
+      saveStyle: {background:cssColors.highMute, color:cssColors.lowMute} as React.CSSProperties,
+      delStyle: {background:cssColors.highMute, color: cssColors.lowMute} as React.CSSProperties
+     };
+
     return (<Modal 
-      className='poi-overlay' id='poi-info'>
+      className='poi-overlay'>
       <div className = 'poi-inner' id = 'poi-info-inner'>
         <div className = 'trip-title'> 
           <textarea
@@ -94,20 +105,18 @@ export default class POISidebar extends React.Component<{}, {}>
               {tripToRender.PUBLIC? 'Public' : 'Private'}
               </button>
           </div>
-            
             <button className= 'buttonStyle' 
-            onClick={this.saveTrip} 
-            style ={{background:cssColors.posMute, color:cssColors.pos } as React.CSSProperties}>
+            onClick={btnParams.saveAction} 
+            style ={btnParams.saveStyle}>
               Save
               </button>
             <button className= 'buttonStyle' 
-            onClick={this.deleteTrip} 
-            style ={{background:cssColors.negMute, color: cssColors.neg} as React.CSSProperties} >
+            onClick={btnParams.delAction} 
+            style ={btnParams.delStyle}
+            >
               Delete
             </button>
         </div>
-        
-      
     </Modal>);
 
       

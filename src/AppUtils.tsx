@@ -9,7 +9,9 @@ export const cssColors= {
     alt: '#F0B67F',
     altMute: '#EFC9A5',
     white: '#ffffff',
-    black: '#000000'
+    black: '#000000',
+    lowMute: '#a0a0a0',
+    highMute: '#c6c6c6'
 }
 
 export default class AppUtils {
