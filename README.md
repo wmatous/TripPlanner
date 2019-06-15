@@ -1,3 +1,9 @@
+## Trip Planner / Project Beta
+
+https://coolors.co/000000-ffffff-fe5f55-26c485-f0b67f
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
