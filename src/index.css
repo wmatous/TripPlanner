@@ -14,8 +14,6 @@ body {
   cursor: pointer;
 }
 
-
-
 .mapboxgl-popup {
   max-width: 200px;
 }
@@ -23,53 +21,4 @@ body {
 .mapboxgl-popup-content {
   text-align: center;
   font-family: 'Open Sans', sans-serif;
-}
-
-
-#map {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-}
-
-
-
-.header-overlay {
-  top: 0;
-  width: 100vw;
-  height: 10vh;
-  background: rgb(255, 255, 255);
-  visibility: visible;
-}
-
-
-
-#legend {
-  padding: 10px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  line-height: 18px;
-  height: 150px;
-  margin-bottom: 40px;
-  width: 100px;
-}
-
-.legend-key {
-  position: absolute;
-  all: inherit;
-  display: inline-block;
-  border-radius: 20%;
-  width: 10px;
-  height: 10px;
-  margin-right: 5px;
-}
-
-.activity-icon {
-  float: left;
-  width: 50px;
-}
-
-
-#overlay-wrapper {
-  position: absolute;
 }

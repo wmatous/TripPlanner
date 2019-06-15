@@ -35,14 +35,11 @@ export default class ActionSidebar extends React.Component<{icons:[{imgSrc:strin
 
     public render(){
         return (
-            <div>
+            <div className='sidebar'>
                 <div 
             className = 'actionBarWrapper' >
                 {this.props.children}
                 {this.buttons}
-            </div>
-            <div className = 'loginPromptModal'>
-                this is the login modal
             </div>
             </div>
 

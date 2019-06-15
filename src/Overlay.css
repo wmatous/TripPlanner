@@ -1,7 +1,8 @@
-.overlayContainer {
-    position: relative;
-}
 .userIcon{
     width: 50px;
     border-radius: 25px;
+}
+.loginPromptModal{
+    float: left;
+    background: #FFFFFF;
 }

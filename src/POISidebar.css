@@ -17,11 +17,8 @@ textarea {
 * (info box and legend) will be displayed
 * on the page. */
 .poi-overlay {
-    bottom: 0;
-    left: 0;
     width: 30vw;
     background: rgba(255, 255, 255, 0.9);
-    overflow-x: hidden;
     position: absolute;
     top: 0;
     height: 100vh;
@@ -31,20 +28,14 @@ textarea {
   @media screen and (orientation:portrait) {
     .poi-overlay {
       bottom: 0;
-      left: 0;
       width: 100vw;
-      background: rgba(255, 255, 255, 0.9);
-      overflow-x: hidden;
       overflow-y: auto;
-      position: relative;
-      height: 40vh;
       border-radius: 10px 10px 0px 0px;
+      height: 40vh;
+      top: unset;
     }
 }
-
-
   .poi-inner {
-    position: relative;
     margin: 5%;
   }
 

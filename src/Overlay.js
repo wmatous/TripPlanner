@@ -67,9 +67,15 @@ export default observer( class Overlay extends Component {
     ];
       
 
+    /*
+
+    <div className = 'loginPromptModal'>
+                            this is the login modal
+                        </div> 
+                        place in sidebar
+                        */
  render(){
     return (
-    <div className = 'overlayContainer'>
         <PoseGroup >
             {!tripstore.activePOISidebar && [
                 <Sidebar key='action'>
@@ -81,15 +87,14 @@ export default observer( class Overlay extends Component {
                         </div>
                         }
                     </ActionSidebar>
+                    
                 </Sidebar>
                 ]}
                 {tripstore.activePOISidebar && [
                 <Modal key ='poi'>
                     <POISidebar />
                 </Modal>]} 
-        </PoseGroup>   
-    }
-    </div>);
+        </PoseGroup>);
     
 }
 }
