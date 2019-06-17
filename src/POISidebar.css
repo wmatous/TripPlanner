@@ -23,21 +23,10 @@ textarea {
     top: 0;
     height: 100vh;
     border-radius: 0px 10px 10px 0px;
+    touch-action: none;
   }
-
-  @media screen and (orientation:portrait) {
-    .poi-overlay {
-      bottom: 0;
-      width: 100vw;
-      overflow-y: auto;
-      border-radius: 10px 10px 0px 0px;
-      height: 40vh;
-      top: unset;
-    }
-}
   .poi-inner {
     margin: 5%;
-    margin-top:0;
   }
 
   @media screen and (orientation:portrait) {
@@ -52,13 +41,29 @@ textarea {
     #dragWrapper{
       text-align: center;
     }
+    .poi-inner {
+      margin-top:0;
+      margin-bottom:0;
+    }
+    .poi-overlay {
+      bottom: 0;
+      width: 100vw;
+      overflow-y: auto;
+      border-radius: 10px 10px 0px 0px;
+      height: 40vh;
+      top: unset;
+    }
+    .tripActions{
+      bottom: 28px;
+      margin: 2%;
+      margin-top:0;
+    }
 }  
  
 
   .tripActions{
     bottom: 28px;
     margin: 2%;
-    position: absolute;
   }
 
 .buttonStyle{
