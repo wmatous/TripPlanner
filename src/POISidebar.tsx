@@ -53,6 +53,7 @@ export default class POISidebar extends React.Component<{}, {height:number|null,
   }
 
   public dragEnd = (e:any)=> {
+    e.preventDefault();
     this.active = false;
   }
 
@@ -73,6 +74,7 @@ export default class POISidebar extends React.Component<{}, {height:number|null,
   }
 
   public setButtonPosition(){
+    // use refs
     const innerDetails = document.getElementById('poi-info-inner');
     const tripActions = document.getElementById('tripActions');
     if (innerDetails && tripActions){
