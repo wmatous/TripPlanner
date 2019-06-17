@@ -24,6 +24,7 @@ textarea {
     height: 100vh;
     border-radius: 0px 10px 10px 0px;
     touch-action: none;
+    overscroll-behavior: contain;
   }
   .poi-inner {
     margin: 5%;
