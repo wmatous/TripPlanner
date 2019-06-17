@@ -41,6 +41,7 @@ export default class POISidebar extends React.Component<{}, {height:number|null,
   
 
   public dragStart = (e:any)=>{
+    e.preventDefault();
     
     if (e.type === "touchstart") {
       this.initialY = e.touches[0].clientY;
