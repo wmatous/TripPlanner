@@ -11,7 +11,7 @@ dotenv.config();
 if(window.location.pathname ==='/postlogin'){
     try{
         const hash = window.location.hash.split('&')[0];
-        apiService.accessToken =hash.substring(hash.indexOf('=')+1);
+        apiService.setAccessToken(hash.substring(hash.indexOf('=')+1));
         console.log(apiService.accessToken);
     } catch (e){
         console.error('There was a problem logging in');

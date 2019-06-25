@@ -2,49 +2,99 @@ import {observer} from 'mobx-react';
 import * as React from 'react';
 import posed from 'react-pose';
 import './POISidebar.css';
-import { tripstore } from './TripStore';
-import { AppUtilsInstance } from './AppUtils';
+import {tripstore} from './TripStore';
+import {AppUtilsInstance, cssColors} from './AppUtils';
+import {apiService} from './APIService';
 
-
+// doesnt change when window resized unless refresh
 export const Modal = posed.div({
   enter: {
     opacity: 1,
-    transition: { duration: 600 },
+    transition: { duration: window.orientation? 600 : 0 },
     x: 0,
   },
   exit: {
     opacity: 0,
-    transition: { duration: 600 },
+    transition: { duration: window.orientation? 600 : 0 },
     x: -100,
   }
 });
 
 
 @observer
-export default class POISidebar extends React.Component<{}, {}>
+export default class POISidebar extends React.Component<{}, {height:number|null, buttonPosition:string}>
 {
-  /*
-  public resizeIt() {
-    const str = $('text-area').value;
-    const cols = $('text-area').cols;
 
-    let linecount = 0;
-    $A(str.split("\n")).each( function(l) {
-        linecount += Math.ceil( l.length / cols ); // Take into account long lines
-    })
-    $('text-area').rows = linecount + 1;
-  };
+  private  active:boolean = false;
+  private  offsetY:number;
+  private  initialY:number;
+  private initialRenderY:number;
 
-   You could attach to keyUp, etc. if keydown doesn't work
-  Event.observe('text-area', 'keydown', resizeIt );
-
-  resizeIt(); //Initial on load
+  constructor(props:any){
+    super(props);
+    const winHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    this.state = { 
+      height:
+      window.orientation? null : (0.4 * winHeight),
+      buttonPosition: 'static'};
+  }
   
-*/
+
+  public dragStart = (e:any)=>{
+    console.log(e);
+    e.preventDefault();
+    
+    if (e.type === "touchstart") {
+      this.initialY = e.touches[0].clientY;
+    } else {
+      this.initialY = e.clientY;
+    }
+    this.active = true;
+    this.initialRenderY = this.state.height!;
+  }
+
+  public dragEnd = (e:any)=> {
+    console.log(e);
+    e.preventDefault();
+    this.active = false;
+  }
+
+  public drag = (e:any)=> {
+    console.log(e);
+    e.preventDefault();
+    if (this.active) {
+    
+      if (e.type === "touchmove") {
+        this.offsetY = e.touches[0].clientY - this.initialY;
+      } else {
+        this.offsetY = e.clientY - this.initialY;
+      }
+      if (this.state.height){
+        this.setState({height:this.initialRenderY - this.offsetY});
+      }
+    }
+  }
+
+  public setButtonPosition(){
+    // use refs
+    const innerDetails = document.getElementById('poi-info-inner');
+    const tripActions = document.getElementById('tripActions');
+    if (innerDetails && tripActions){
+      const innerDetailBox = innerDetails.getBoundingClientRect();
+      const actionBox = tripActions.getBoundingClientRect();
+      if (innerDetailBox.bottom >= actionBox.top){
+        this.setState({buttonPosition: 'static'});
+      } else if(actionBox.bottom < window.innerHeight-28){
+        if (this.state.buttonPosition !== 'absolute'){
+          this.setState({buttonPosition: 'absolute'});
+        }
+      }
+    }
+  }
 
   public handleChange = (event: { target: HTMLTextAreaElement })=> {
     const elementID = (event.target as HTMLTextAreaElement).dataset.fieldid;
-    this.calculateRows((event.target as HTMLTextAreaElement));
+    this.calculateRows(event.target as HTMLTextAreaElement);
     if (elementID){
       tripstore.setTripProperty(elementID, event.target.value); 
     }
@@ -53,6 +103,13 @@ export default class POISidebar extends React.Component<{}, {}>
   public componentDidMount(){
     this.calculateRows(document.getElementById('trip-title') as HTMLTextAreaElement);
     this.calculateRows(document.getElementById('trip-desc') as HTMLTextAreaElement);
+    this.setButtonPosition();
+  }
+
+  public componentDidUpdate(){
+    this.calculateRows(document.getElementById('trip-title') as HTMLTextAreaElement);
+    this.calculateRows(document.getElementById('trip-desc') as HTMLTextAreaElement);
+    this.setButtonPosition();
   }
 
   public saveTrip() {
@@ -61,6 +118,10 @@ export default class POISidebar extends React.Component<{}, {}>
 
   public deleteTrip() {
     tripstore.deleteActiveTrip();
+  }
+
+  public togglePublic(){
+    tripstore.setTripProperty('PUBLIC', !(tripstore.currentTripData!.PUBLIC));
   }
 
   public listPayload(){
@@ -76,10 +137,28 @@ export default class POISidebar extends React.Component<{}, {}>
      if (!tripToRender){
        return (<div/>);
      }
-    return (
-      <Modal 
-        className='poi-overlay' id='poi-info'>
-        <div className = 'poi-inner' id = 'poi-info-inner'>
+     const btnParams = apiService.accessToken? {
+      saveStyle: {background:cssColors.posMute, color:cssColors.pos} as React.CSSProperties,
+      saveAction:this.saveTrip,
+      delStyle: {background:cssColors.negMute, color: cssColors.neg} as React.CSSProperties,
+      delAction: this.deleteTrip
+     }:{
+      saveStyle: {background:cssColors.highMute, color:cssColors.lowMute} as React.CSSProperties,
+      delStyle: {background:cssColors.highMute, color: cssColors.lowMute} as React.CSSProperties
+     };
+
+    return (<Modal 
+      className='poi-overlay' style={{height:this.state.height}as React.CSSProperties}
+      onMouseDown={this.dragStart}
+      onMouseMove={this.drag}
+      onMouseUp={this.dragEnd}
+      onTouchStart={this.dragStart}
+      onTouchMove={this.drag}
+      onTouchEnd={this.dragEnd}>
+      <div className = 'poi-inner' id = 'poi-info-inner'>
+          <div id='dragWrapper'>
+          <div id='dragHeader'/>
+          </div>
           <div className = 'trip-title'> 
             <textarea
                   id = 'trip-title'
@@ -96,12 +175,30 @@ export default class POISidebar extends React.Component<{}, {}>
                     onChange={this.handleChange}
                     />
           </div>
-          <button onClick={this.saveTrip} >Save</button>
-          <button onClick={this.deleteTrip} >Delete</button>
-          <button onClick={this.listPayload} > list </button>
         </div>
-      </Modal>
-      );
+        <div className = 'tripActions' 
+        id = 'tripActions' 
+        style={{position:this.state.buttonPosition} as React.CSSProperties}>
+          <div>
+          <button className= 'buttonStyle' 
+            onClick={this.togglePublic} 
+            style ={{color: tripToRender.PUBLIC? cssColors.pos:'#a0a0a0' } as React.CSSProperties}>
+              {tripToRender.PUBLIC? 'Public' : 'Private'}
+              </button>
+          </div>
+            <button className= 'buttonStyle' 
+            onClick={btnParams.saveAction} 
+            style ={btnParams.saveStyle}>
+              Save
+              </button>
+            <button className= 'buttonStyle' 
+            onClick={btnParams.delAction} 
+            style ={btnParams.delStyle}
+            >
+            Delete
+            </button>
+        </div>
+    </Modal>);
 
       
   };
@@ -115,6 +212,7 @@ export default class POISidebar extends React.Component<{}, {}>
     });
     el.rows = linecount;
   }
+
 }
 
 

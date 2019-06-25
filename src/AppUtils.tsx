@@ -1,6 +1,19 @@
 import * as mapboxgl  from 'mapbox-gl';
 import {tripstore, DBLayer, Trip, MarkerSource, LayerPoint} from './TripStore';
 
+export const cssColors= {
+    posMute: '#90B8D1',
+    neg: '#FE5F55',
+    negMute:'#FFB5AF',
+    pos: '#067BC2',
+    alt: '#F0B67F',
+    altMute: '#EFC9A5',
+    white: '#ffffff',
+    black: '#000000',
+    lowMute: '#a0a0a0',
+    highMute: '#c6c6c6'
+}
+
 export default class AppUtils {
     private mapInstance:mapboxgl.Map;
 
@@ -59,6 +72,7 @@ public  handleFileDrop(e:any){
           const newTrip = {
             ID: tripId,
             TITLE:file.name,
+            PUBLIC: false,
             DESCRIPTION:'Dropped file',
             LAYERS: layerList,
             MARKERS: markerList
@@ -89,8 +103,9 @@ public  handleFileDrop(e:any){
           newMarkers.push(newMarker); 
           
           const newTrip:Trip = {
-            DESCRIPTION: 'test',
-            TITLE: 'test',
+            DESCRIPTION: 'Description',
+            TITLE: 'Title',
+            PUBLIC: false,
             ID: Math.random().toString(36).substring(7),
             MARKERS: newMarkers,
             LAYERS: layers,
@@ -138,8 +153,9 @@ public  handleFileDrop(e:any){
           newLayers.push(newLayer);
   
           const newLayerTrip:Trip = {
-            DESCRIPTION: 'test',
-            TITLE: 'test',
+            DESCRIPTION: 'Title',
+            PUBLIC: false,
+            TITLE: 'Description',
             ID: newTripId,
             MARKERS: newMarkers,
             LAYERS: newLayers,
