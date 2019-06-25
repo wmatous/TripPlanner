@@ -76,3 +76,7 @@ textarea {
     margin: 5px;
     font-size: 32px;
   }
+
+  html, body {
+    overflow: hidden;
+  }
