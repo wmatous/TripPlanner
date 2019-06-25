@@ -41,6 +41,7 @@ export default class POISidebar extends React.Component<{}, {height:number|null,
   
 
   public dragStart = (e:any)=>{
+    console.log(e);
     e.preventDefault();
     
     if (e.type === "touchstart") {
@@ -53,14 +54,15 @@ export default class POISidebar extends React.Component<{}, {height:number|null,
   }
 
   public dragEnd = (e:any)=> {
+    console.log(e);
     e.preventDefault();
     this.active = false;
   }
 
   public drag = (e:any)=> {
+    console.log(e);
+    e.preventDefault();
     if (this.active) {
-    
-      e.preventDefault();
     
       if (e.type === "touchmove") {
         this.offsetY = e.touches[0].clientY - this.initialY;
