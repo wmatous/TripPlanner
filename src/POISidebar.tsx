@@ -22,59 +22,16 @@ export const Modal = posed.div({
 
 
 @observer
-export default class POISidebar extends React.Component<{}, {height:number|null, buttonPosition:string}>
+export default class POISidebar extends React.Component<{}, {buttonPosition:string}>
 {
 
-  private  active:boolean = false;
-  private  offsetY:number;
-  private  initialY:number;
-  private initialRenderY:number;
 
   constructor(props:any){
     super(props);
-    const winHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     this.state = { 
-      height:
-      window.orientation? null : (0.4 * winHeight),
       buttonPosition: 'static'};
   }
   
-
-  public dragStart = (e:any)=>{
-    console.log(e);
-    e.preventDefault();
-    
-    if (e.type === "touchstart") {
-      this.initialY = e.touches[0].clientY;
-    } else {
-      this.initialY = e.clientY;
-    }
-    this.active = true;
-    this.initialRenderY = this.state.height!;
-  }
-
-  public dragEnd = (e:any)=> {
-    console.log(e);
-    e.preventDefault();
-    this.active = false;
-  }
-
-  public drag = (e:any)=> {
-    console.log(e);
-    e.preventDefault();
-    if (this.active) {
-    
-      if (e.type === "touchmove") {
-        this.offsetY = e.touches[0].clientY - this.initialY;
-      } else {
-        this.offsetY = e.clientY - this.initialY;
-      }
-      if (this.state.height){
-        this.setState({height:this.initialRenderY - this.offsetY});
-      }
-    }
-  }
-
   public setButtonPosition(){
     // use refs
     const innerDetails = document.getElementById('poi-info-inner');
@@ -148,13 +105,7 @@ export default class POISidebar extends React.Component<{}, {height:number|null,
      };
 
     return (<Modal 
-      className='poi-overlay' style={{height:this.state.height}as React.CSSProperties}
-      onMouseDown={this.dragStart}
-      onMouseMove={this.drag}
-      onMouseUp={this.dragEnd}
-      onTouchStart={this.dragStart}
-      onTouchMove={this.drag}
-      onTouchEnd={this.dragEnd}>
+      className='poi-overlay' >
       <div className = 'poi-inner' id = 'poi-info-inner'>
           <div id='dragWrapper'>
           <div id='dragHeader'/>
